@@ -415,6 +415,7 @@ var PASS = 8, NQ = 10, STREAK_GOAL = 5;
 var EXEC = 'https://script.google.com/macros/s/AKfycbyU9Sx2yJE7wYBl_V9_AiXSOGoMiuYNnZP3CWH_w397MEN6MAbNGC8YLLj7mJ22YgNTdQ/exec' || '';
 var GS = !!(window.google && google.script && google.script.run);
 var LIVE = GS || !!EXEC;
+var HQ = /[?&]hq=1/.test(location.search);
 function api(fn, args, ok, fail) {
   if (GS) { var r = google.script.run.withSuccessHandler(ok).withFailureHandler(fail); r[fn].apply(r, args); return; }
   if (!EXEC) { fail(); return; }
@@ -502,6 +503,7 @@ function startScreen() {
   h += '<label for="nm" class="muted">שם פרטי ושם משפחה</label><input id="nm" class="name" autocomplete="off" maxlength="40">';
   h += '<div class="two"><div><label for="sc" class="muted">בית ספר</label><select id="sc" class="name"><option value="">בחרו…</option><option>בגין</option><option>יד גיורא</option></select></div>';
   h += '<div><label for="cl" class="muted">כיתה</label><select id="cl" class="name"><option value="">בחרו…</option>' + cls + '</select></div></div>';
+  if (HQ) h += '<label for="hq" class="muted" style="display:block;margin-top:10px">הקבצה</label><select id="hq" class="name"><option value="">בחרו…</option><option>א</option><option>ב</option><option>ג</option></select>';
   h += '<div id="ne" class="err"></div><button class="btn" id="go">מתחילים</button></div>';
   APP.innerHTML = h;
   if (prev && prev.name && prev.school) document.getElementById('cont').onclick = function () { begin(prev.name, prev.school, prev.cls); };
@@ -510,6 +512,7 @@ function startScreen() {
     var sc = document.getElementById('sc').value, cl = document.getElementById('cl').value, ne = document.getElementById('ne');
     if (n.split(' ').length < 2) { ne.textContent = 'כתבו שם פרטי ושם משפחה, כדי שהמורה ידע מי אתם.'; return; }
     if (!sc || !cl) { ne.textContent = 'בחרו בית ספר וכיתה.'; return; }
+    if (HQ) { var g = document.getElementById('hq').value; if (!g) { ne.textContent = 'בחרו הקבצה.'; return; } cl = cl + ' · הקבצה ' + g; }
     begin(n, sc, cl);
   };
 }
