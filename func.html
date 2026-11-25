@@ -77,12 +77,29 @@ input.ans{direction:ltr;text-align:center;font-size:22px}
 .shake{animation:sh .35s}
 @keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 @media(prefers-reduced-motion:reduce){.shake{animation:none}.bar i{transition:none}}
+.tools{display:flex;gap:8px;margin-top:8px}
+.tools button{flex:1;min-height:40px;border:1.5px solid var(--line);border-radius:10px;background:#fff;font:500 15px Rubik,Arial,sans-serif;color:var(--ink);cursor:pointer}
+.task{margin-top:8px;padding:8px 10px;border-radius:10px;background:#eef4ff;border:1px solid #c9d8f5;font-size:14px}
+.task .bar{margin-top:6px;background:#dbe5f7}.task .bar i{background:#2b6cb0}
+.task.done{background:var(--greenbg);border-color:#b6e0d2}
+.nudge{margin-top:8px;padding:8px 10px;border-radius:10px;background:#fff7d6;border:1px solid #f0e1a0;font-size:14px}
+.tl{display:grid;gap:8px;margin:8px 0 14px}
+.tp{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;padding:8px 12px;border:1.5px solid var(--line);border-radius:12px;background:#fff;font:16px Rubik,Arial,sans-serif;color:var(--ink);text-align:start;cursor:pointer}
+.tp[disabled]{cursor:default;opacity:.65}
+.dot{flex:none;width:16px;height:16px;border-radius:8px;background:#d5d9e0}
+.dot.g{background:var(--green)}.dot.y{background:#e9b949}.dot.r{background:var(--orange)}
+.tp .sm{margin-inline-start:auto;font-size:13px;color:var(--soft);white-space:nowrap}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--soft);margin:4px 0 10px}.legend span{display:flex;align-items:center;gap:5px}.legend .dot{width:12px;height:12px}
+.tip{background:#f4f7fb;border-radius:12px;padding:12px;margin:8px 0}
+.ex{border:1.5px dashed #c9cfda;border-radius:12px;padding:12px;margin:10px 0}
+.ex .ans{margin-top:8px;padding:8px 10px;border-radius:10px;background:var(--greenbg)}
+h3{font-size:18px;margin:14px 0 6px}
 </style>
 </head>
 <body>
 <div class="wrap" id="app"></div>
 <script>
-var CONF = {"app":"func","ls":"funcq_v1","title":"מסע הפונקציות","page":"מסע הפונקציות – ח1","sub":"ח׳1 · מבוא לפונקציות והפונקציה הקווית \u003cspan class=\"m\" dir=\"ltr\">y = mx\u003c/span>","ldesc":{"1":"רביעים ושיעורי נקודות, קריאת ערכים מגרף ומטבלה, הצבה, נקודה על גרף, עלייה וירידה, ומהי פונקציה.","2":"מעבר בין ייצוגים, שיפוע וקצב השתנות, תלילות, תחום וטווח, עלייה וירידה, חיוביות ושליליות.","3":"שאלות מילוליות (מחיר, מהירות), השוואת פונקציות, \"מה יקרה אם…\", יחס ישר ושאלות הבנה."},"expIntro":"סדרה של 6 שאלות שבהן תגלו בעצמכם משהו על קצב ההשתנות. אם טעיתם – תקבלו רמז ותנסו שוב. אין כאן ציון.","expDone":"קצב ההשתנות של פונקציה קווית הוא \u003cb>השיפוע\u003c/b>: בכמה משתנה y כש־x גדל ב־1. הוא זהה בכל מקום על הישר, ולכן הגרף הוא קו ישר."};
+var CONF = {"app":"func","book":"כיוון ח׳ כרך א׳","ls":"funcq_v1","title":"מסע הפונקציות","page":"מסע הפונקציות – ח1","sub":"ח׳1 · מבוא לפונקציות והפונקציה הקווית \u003cspan class=\"m\" dir=\"ltr\">y = mx\u003c/span>","ldesc":{"1":"רביעים ושיעורי נקודות, קריאת ערכים מגרף ומטבלה, הצבה, נקודה על גרף, עלייה וירידה, ומהי פונקציה.","2":"מעבר בין ייצוגים, שיפוע וקצב השתנות, תלילות, תחום וטווח, עלייה וירידה, חיוביות ושליליות.","3":"שאלות מילוליות (מחיר, מהירות), השוואת פונקציות, \"מה יקרה אם…\", יחס ישר ושאלות הבנה."},"expIntro":"סדרה של 6 שאלות שבהן תגלו בעצמכם משהו על קצב ההשתנות. אם טעיתם – תקבלו רמז ותנסו שוב. אין כאן ציון.","expDone":"קצב ההשתנות של פונקציה קווית הוא \u003cb>השיפוע\u003c/b>: בכמה משתנה y כש־x גדל ב־1. הוא זהה בכל מקום על הישר, ולכן הגרף הוא קו ישר."};
 /* מחוללי שאלות – פונקציות, ח1 (ארכימדס "כיוון" ח כרך א, עמ' 22–93) */
 var GEN = (function () {
   function ri(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
@@ -616,6 +633,40 @@ var GEN = (function () {
 })();
 if (typeof module !== 'undefined') module.exports = GEN;
 
+var TOPIC = (function () {
+  function M(s) { return '<span class="m" dir="ltr">' + s + '</span>'; }
+  return {
+    quadrant: { n: 'רביעים במערכת הצירים', p: 'עמ׳ 21', t: 'רביע 1: x חיובי ו־y חיובי. רביע 2: x שלילי ו־y חיובי. רביע 3: שניהם שליליים. רביע 4: x חיובי ו־y שלילי. נקודה שאחד השיעורים שלה 0 נמצאת על ציר ולא ברביע.' },
+    readPoint: { n: 'שיעורי נקודה', p: 'עמ׳ 21', t: 'כותבים קודם את x (כמה ימינה או שמאלה) ואחר כך את y (כמה למעלה או למטה): ' + M('(x, y)') + '.' },
+    readGraph: { n: 'קריאת ערך מגרף', p: 'עמ׳ 24', t: 'מוצאים את ה־x על ציר ה־x, עולים או יורדים ישר עד הגרף, ומשם הולכים אופקית לציר ה־y וקוראים את הערך.' },
+    readTable: { n: 'קריאה מטבלת ערכים', p: 'עמ׳ 24', t: 'בטבלה כל עמודה היא זוג: ה־x למעלה וה־y שמתאים לו מתחתיו.' },
+    subst: { n: 'הצבה בייצוג אלגברי', p: 'עמ׳ 89', t: 'מציבים את מספר ה־x במקום x ומחשבים. למשל בפונקציה ' + M('y = 3x') + ' עבור ' + M('x = 4') + ': ' + M('y = 3 · 4 = 12') + '.' },
+    pointOn: { n: 'נקודה על גרף הפונקציה', p: 'עמ׳ 24', t: 'נקודה נמצאת על הגרף אם כשמציבים את ה־x שלה מקבלים בדיוק את ה־y שלה.' },
+    incDec: { n: 'פונקציה עולה או יורדת', p: 'עמ׳ 49', t: 'הולכים על הגרף משמאל לימין: אם הוא עולה – הפונקציה עולה. בפונקציה ' + M('y = mx') + ' – m חיובי – עולה, m שלילי – יורדת.' },
+    isFunc: { n: 'האם הגרף מייצג פונקציה', p: 'עמ׳ 23', t: 'בפונקציה לכל x מתאים y אחד בלבד. בודקים עם קו אנכי: אם הוא חותך את הגרף ביותר מנקודה אחת – זו לא פונקציה.' },
+    defEasy: { n: 'הגדרות בסיס', p: 'עמ׳ 23, 49', t: 'תחום – כל ערכי x. טווח – כל ערכי y. עולה – כש־x גדל, y גדל. יורדת – כש־x גדל, y קטן.' },
+    tableToRule: { n: 'מטבלה לייצוג אלגברי', p: 'עמ׳ 89', t: 'מחלקים y ב־x באחת העמודות (לא כש־x = 0). התוצאה היא m, והייצוג הוא ' + M('y = mx') + '. בודקים בעמודה נוספת.' },
+    graphToRule: { n: 'מגרף לייצוג אלגברי', p: 'עמ׳ 89', t: 'מוצאים על הגרף נקודה נוחה ' + M('(x, y)') + ', מחשבים ' + M('m = y : x') + ' וכותבים ' + M('y = mx') + '.' },
+    ruleToGraph: { n: 'מייצוג אלגברי לגרף', p: 'עמ׳ 89', t: 'הגרף של ' + M('y = mx') + ' עובר בראשית. מציבים ' + M('x = 1') + ' ומקבלים נקודה נוספת ' + M('(1, m)') + '.' },
+    slopeFromPoint: { n: 'מציאת השיפוע מנקודה', p: 'עמ׳ 89', t: 'כשהישר עובר בראשית ובנקודה ' + M('(x, y)') + ', השיפוע הוא ' + M('m = y : x') + '.' },
+    rate: { n: 'קצב השתנות', p: 'עמ׳ 56–67', t: 'קצב ההשתנות הוא בכמה y משתנה כש־x גדל ב־1. בפונקציה קווית הוא קבוע, והוא השיפוע.' },
+    steep: { n: 'תלילות ושיפוע', p: 'עמ׳ 71–89', t: 'ככל שהמספר m רחוק יותר מ־0 (בלי להתייחס לסימן), הישר תלול יותר.' },
+    intervals: { n: 'תחומי עלייה, ירידה וקביעות', p: 'עמ׳ 49', t: 'קוראים את הגרף משמאל לימין ורושמים את ערכי ה־x שבהם הוא עולה, יורד או אופקי.' },
+    quadLine: { n: 'רביעים שהגרף עובר בהם', p: 'עמ׳ 21, 89', t: 'ישר ' + M('y = mx') + ' עם m חיובי עובר ברביעים 1 ו־3. עם m שלילי – ברביעים 2 ו־4.' },
+    posNeg: { n: 'חיוביות ושליליות', p: 'סיכום', t: 'חיובית – הגרף מעל ציר ה־x (y חיובי). שלילית – מתחת לציר ה־x. מסתכלים על y, לא על x.' },
+    domRange: { n: 'תחום וטווח מגרף', p: 'עמ׳ 23', t: 'תחום – מאיפה עד איפה הגרף משתרע לאורך ציר ה־x. טווח – מהנמוך ביותר עד הגבוה ביותר לאורך ציר ה־y.' },
+    wordPrice: { n: 'שאלה מילולית – מחיר', p: 'עמ׳ 89', t: 'המחיר ליחידה הוא m. המחיר הכולל: ' + M('y = m · x') + ' כש־x הוא מספר היחידות.' },
+    wordSpeed: { n: 'שאלה מילולית – מהירות', p: 'עמ׳ 56–67', t: 'דרך = מהירות × זמן. המהירות היא קצב ההשתנות של הדרך.' },
+    compare2: { n: 'השוואת שתי פונקציות', p: 'עמ׳ 71–89', t: 'משווים את m של שתי הפונקציות: m גדול יותר – גדל מהר יותר (ותלול יותר).' },
+    whatIf: { n: 'מה יקרה אם…', p: 'עמ׳ 89', t: 'בפונקציה ' + M('y = mx') + ' – אם x גדל פי 2, גם y גדל פי 2. זה יחס ישר.' },
+    findX: { n: 'מציאת x לפי ערך y', p: 'עמ׳ 89', t: 'פותרים את המשוואה ' + M('m · x = y') + ': מחלקים את y ב־m.' },
+    twoStep: { n: 'שני שלבים', p: 'עמ׳ 89', t: 'קודם מוצאים את m מהנקודה הנתונה (' + M('m = y : x') + '), ואז מציבים את ה־x החדש.' },
+    direct: { n: 'יחס ישר', p: 'עמ׳ 89', t: 'ביחס ישר המנה ' + M('y : x') + ' קבועה, והגרף הוא ישר שעובר בראשית.' },
+    defBasic: { n: 'הגדרות', p: 'עמ׳ 23, 49, 67, 89', t: 'תחום – ערכי x, טווח – ערכי y. שיפוע – גובה המדרגה חלקי רוחב המדרגה. קצב אחיד – הגרף ישר.' },
+    truth: { n: 'טענות נכונות על פונקציה', p: 'סיכום', t: 'בודקים כל טענה בנפרד: מציבים מספרים, מסתכלים על הסימן של m, ובודקים אם הגרף עובר בראשית.' }
+  };
+})();
+
 </script>
 <script>
 {
@@ -638,17 +689,56 @@ function api(fn, args, ok, fail) {
     .then(function (t) { var j = JSON.parse(t); if (j.ok) ok(j.r); else fail(j.err); })
     .catch(fail);
 }
-document.addEventListener('click', function (e) { var b = e.target.closest('[data-j]'); if (!b) return; S.level = +b.dataset.j; if (S.level === 4) { S.stage = 'A'; S.streak = 0; } save(); route(); });
+document.addEventListener('click', function (e) { var a = e.target.closest('[data-a]'); if (a) { if (a.dataset.a === 'prog') progressScreen(); else endSession(); return; } var b = e.target.closest('[data-j]'); if (!b) return; S.level = +b.dataset.j; if (S.level === 4) { S.stage = 'A'; S.streak = 0; } save(); route(); });
 
 function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 function save() { try { localStorage.setItem(LS, JSON.stringify(S)); } catch (e) {} }
 function loadLocal() { try { return JSON.parse(localStorage.getItem(LS) || 'null'); } catch (e) { return null; } }
 function normName(n) { return String(n || '').replace(/\s+/g, ' ').trim(); }
 function blank(name) { return { name: name, level: 1, att: { 1: 0, 2: 0, 3: 0 }, last: '', stage: 'A', streak: 0, best: 0, open: 0 }; }
+function fix(st) { st.m = st.m || {}; st.days = st.days || {}; return st; }
+
+/* ---------- זמן תרגול, שליטה בנושאים, משימה ---------- */
+var TASK = null, RESUME = null, SESS = null, lastT = 0;
+function dkey(d) { return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+function isHome(d) { var w = d.getDay(), h = d.getHours(); return w >= 5 || h < 8 || h >= 15; }
+function newSession() { SESS = { t0: Date.now(), sec: 0, n: 0, ok: 0, snap: {}, nudged: false }; Object.keys(S.m).forEach(function (k) { SESS.snap[k] = stat(k); }); lastT = Date.now(); }
+function tick() {
+  var now = Date.now(), d = new Date(now), dt = lastT ? Math.min(now - lastT, 180000) : 0; lastT = now;
+  if (dt <= 0 || !SESS) return;
+  var k = dkey(d), b = S.days[k] || [0, 0]; b[isHome(d) ? 1 : 0] += Math.round(dt / 1000); S.days[k] = b; SESS.sec += dt / 1000;
+  var ks = Object.keys(S.days).sort(); while (ks.length > 60) delete S.days[ks.shift()];
+  S.seen = now;
+}
+function mins(from) { var a = 0, h = 0; Object.keys(S.days).forEach(function (k) { if (from && k < from) return; a += S.days[k][0] + S.days[k][1]; h += S.days[k][1]; }); return { all: Math.round(a / 60), home: Math.round(h / 60) }; }
+function rec(k, ok) { if (!k || !TOPIC[k]) return; var m = S.m[k] || { h: '', n: 0, ok: 0 }; m.h = (m.h + (ok ? '1' : '0')).slice(-5); m.n++; if (ok) m.ok++; S.m[k] = m; }
+function stat(k) {
+  var m = S.m[k]; if (!m || !m.h) return '';
+  var h = m.h, acc = h.split('').filter(function (c) { return c === '1'; }).length / h.length;
+  if (h.length >= 3 && acc >= 0.8) return 'g';
+  if (h.length >= 2 && acc < 0.5) return 'r';
+  return 'y';
+}
+function acc(k) { var h = (S.m[k] || {}).h || ''; return h ? h.split('').filter(function (c) { return c === '1'; }).length / h.length : 1; }
+function weak() {
+  return Object.keys(S.m).filter(function (k) { var s = stat(k); return TOPIC[k] && (s === 'r' || s === 'y') && acc(k) < 1; })
+    .sort(function (a, b) { var sa = stat(a) === 'r' ? 0 : 1, sb = stat(b) === 'r' ? 0 : 1; return sa - sb || acc(a) - acc(b); });
+}
+function taskProg() {
+  if (!TASK) return null;
+  var lv = TASK.level ? Math.min(S.level, 4) >= TASK.level : true, mm = mins(TASK.from).all, mok = TASK.minutes ? mm >= TASK.minutes : true;
+  var parts = [], done = 0, tot = 0;
+  if (TASK.level) { parts.push(TASK.level >= 4 ? 'לסיים את 3 הרמות' : 'להגיע לרמה ' + TASK.level); tot++; if (lv) done++; }
+  if (TASK.minutes) { parts.push(TASK.minutes + ' דקות תרגול'); tot++; }
+  var frac = ((TASK.level ? (lv ? 1 : Math.min(S.level - 1, 3) / Math.max(TASK.level - 1, 1)) : 0) + (TASK.minutes ? Math.min(mm / TASK.minutes, 1) : 0)) / tot;
+  return { done: lv && mok, text: parts.join(' + '), frac: Math.max(0, Math.min(1, frac)), mm: mm, lv: lv };
+}
+function taskStr() { var t = taskProg(); if (!t) return ''; return t.done ? '✓ הושלמה' : (TASK.level ? 'רמה ' + Math.min(S.level, 4) + '/' + TASK.level : '') + (TASK.minutes ? (TASK.level ? ' · ' : '') + t.mm + '/' + TASK.minutes + ' דק׳' : ''); }
+function dueTxt(d) { if (!d) return ''; var p = d.split('-'); return p[2] + '/' + p[1]; }
 
 /* ---------- שליחה לגיליון של המורה ---------- */
 var outbox = [], sending = false;
-function send(p) { p.app = CONF.app; p.name = S.name; p.state = S; outbox.push(JSON.stringify(p)); flush(); }
+function send(p) { tick(); p.app = CONF.app; p.name = S.name; p.state = S; var mm = mins(); p.x = { weak: weak().slice(0, 3).map(function (k) { return TOPIC[k].n; }).join(', '), mt: mm.all, mh: mm.home, task: taskStr() }; outbox.push(JSON.stringify(p)); flush(); }
 function flush() {
   if (sending || !outbox.length) return;
   if (!LIVE) { outbox = []; return; }
@@ -660,7 +750,12 @@ function flush() {
 function header(extra) {
   var h = '<div class="top"><div class="lv">';
   for (var l = 1; l <= 4; l++) h += '<span class="chip ' + (l < S.level ? 'done' : l === S.level ? 'now' : '') + '">' + (l === 4 ? '★' : l) + '</span>';
-  h += '<span class="who">' + esc(S.name) + (S.cls ? ' · ' + esc(S.cls) : '') + '</span></div>' + (extra || '') + '</div>';
+  h += '<span class="who">' + esc(S.name) + (S.cls ? ' · ' + esc(S.cls) : '') + '</span></div>';
+  h += '<div class="tools"><button data-a="prog">📊 ההתקדמות שלי</button><button data-a="end">סיימתי להיום</button></div>';
+  var t = taskProg();
+  if (t) h += '<div class="task' + (t.done ? ' done' : '') + '"><b>' + (t.done ? '✓ השלמתם את המשימה!' : 'המשימה שלכם:') + '</b> ' + t.text + (TASK.due ? ' · עד ' + dueTxt(TASK.due) : '') + (TASK.minutes && !t.done ? ' <span class="muted">(' + t.mm + ' מתוך ' + TASK.minutes + ' דק׳)</span>' : '') + (TASK.note ? '<div class="muted">' + esc(TASK.note) + '</div>' : '') + (t.done ? '' : '<div class="bar"><i style="width:' + Math.round(t.frac * 100) + '%"></i></div>') + '</div>';
+  if (SESS && SESS.sec >= 25 * 60 && !SESS.nudged) h += '<div class="nudge">תרגלתם כבר ' + Math.round(SESS.sec / 60) + ' דקות 👏 אפשר ללחוץ "סיימתי להיום" ולראות סיכום.</div>';
+  h += (extra || '') + '</div>';
   if (!LIVE) h = '<div class="demo">מצב ניסיון למורה – שום דבר לא נשלח. קפיצה לרמה: ' + [1, 2, 3, 4].map(function (l) { return '<button data-j="' + l + '">' + (l === 4 ? '★' : l) + '</button>'; }).join('') + '</div>' + h;
   return h;
 }
@@ -675,7 +770,7 @@ function startScreen() {
   h += '<div><label for="cl" class="muted">כיתה</label><select id="cl" class="name"><option value="">בחרו…</option>' + cls + '</select></div></div>';
   h += '<div id="ne" class="err"></div><button class="btn" id="go">מתחילים</button></div>';
   APP.innerHTML = h;
-  if (prev && prev.name && prev.school) document.getElementById('cont').onclick = function () { S = prev; route(); };
+  if (prev && prev.name && prev.school) document.getElementById('cont').onclick = function () { begin(prev.name, prev.school, prev.cls); };
   document.getElementById('go').onclick = function () {
     var n = normName(document.getElementById('nm').value);
     var sc = document.getElementById('sc').value, cl = document.getElementById('cl').value, ne = document.getElementById('ne');
@@ -687,9 +782,16 @@ function startScreen() {
 function begin(n, sc, cl) {
   APP.innerHTML = '<div class="card" style="margin-top:18px"><p>טוען…</p></div>';
   var done = false;
-  function go(st) { if (done) return; done = true; S = st && st.name ? st : blank(n); S.name = n; S.school = sc; S.cls = cl; save(); route(); }
+  function go(st) {
+    if (done) return; done = true;
+    var loc = loadLocal(); if (!(st && st.name) && loc && loc.name === n && loc.school === sc && loc.cls === cl) st = loc;
+    S = fix(st && st.name ? st : blank(n)); S.name = n; S.school = sc; S.cls = cl;
+    var away = S.seen && Date.now() - S.seen > 12 * 3600 * 1000;
+    newSession(); save();
+    if (away && weak().length) warmIntro(); else route();
+  }
   if (LIVE) {
-    api('load', [n, CONF.app, sc, cl], function (r) { go(r ? JSON.parse(r) : null); }, function () { go(null); });
+    api('load2', [n, CONF.app, sc, cl], function (r) { var o = null; try { o = JSON.parse(r); } catch (e) {} TASK = o && o.t || null; go(o && o.s ? JSON.parse(o.s) : null); }, function () { go(null); });
     setTimeout(function () { go(null); }, 8000);
   } else go(null);
 }
@@ -697,6 +799,7 @@ function route() {
   if (S.level <= 3) levelIntro(); else lvl4Intro();
 }
 function levelIntro() {
+  RESUME = levelIntro; tick();
   var a = S.att[S.level];
   var h = header() + '<div class="card"><h2>' + LNAME[S.level] + '</h2><p>' + LDESC[S.level] + '</p><p class="muted">' + (a ? 'זה יהיה הניסיון ה־' + (a + 1) + ' ברמה הזו – עם שאלות חדשות.' : '10 שאלות · צריך 8 נכונות כדי לעבור.') + '</p><button class="btn" id="go">' + (a ? 'מנסים שוב' : 'מתחילים') + '</button></div>';
   APP.innerHTML = h;
@@ -707,8 +810,9 @@ function optsHtml(q) {
   return '<div class="' + cls + '">' + q.options.map(function (o, i) { return '<button class="opt" data-i="' + i + '"><span class="let">' + LET[i] + '</span><span>' + o + '</span></button>'; }).join('') + '</div>';
 }
 function showQ() {
-  var q = Q.list[Q.i];
-  var bar = '<div class="bar"><i style="width:' + (Q.i / NQ * 100) + '%"></i></div><div class="meta"><span>' + LNAME[S.level] + ' · שאלה ' + (Q.i + 1) + ' מתוך ' + NQ + '</span><span>✓ ' + Q.ok + '</span></div>';
+  var q = Q.list[Q.i], tot = Q.list.length;
+  if (!Q.mode) { var myQ = Q; RESUME = function () { Q = myQ; if (Q.answered === Q.i) next(); else showQ(); }; }
+  var bar = '<div class="bar"><i style="width:' + (Q.i / tot * 100) + '%"></i></div><div class="meta"><span>' + (Q.mode ? Q.title : LNAME[S.level]) + ' · שאלה ' + (Q.i + 1) + ' מתוך ' + tot + '</span><span>✓ ' + Q.ok + '</span></div>';
   APP.innerHTML = header(bar) + '<div class="card"><p class="q">' + q.prompt + '</p>' + (q.fig ? '<div class="fig">' + q.fig + '</div>' : '') + optsHtml(q) + '<div id="fb"></div></div>';
   window.scrollTo(0, 0);
   APP.querySelectorAll('.opt').forEach(function (b) { b.onclick = function () { answer(+b.dataset.i); }; });
@@ -718,32 +822,44 @@ function answer(i) {
   var btns = APP.querySelectorAll('.opt');
   btns.forEach(function (b) { b.disabled = true; });
   btns[q.answer].classList.add('ok'); if (!ok) btns[i].classList.add('no');
-  if (ok) Q.ok++; else Q.wrong.push(q.type);
-  send({ kind: 'answer', level: S.level, attempt: S.att[S.level], type: q.type, correct: ok ? 1 : 0 });
-  var last = Q.i === NQ - 1;
-  document.getElementById('fb').innerHTML = '<div class="fb ' + (ok ? 'ok' : 'no') + '"><b class="t">' + (ok ? 'נכון!' : 'לא בדיוק. התשובה הנכונה: ' + LET[q.answer]) + '</b>' + q.expl + '</div><button class="btn" id="nx">' + (last ? 'לסיכום הרמה' : 'לשאלה הבאה') + '</button>';
-  document.getElementById('nx').onclick = function () { if (last) endLevel(); else { Q.i++; showQ(); } };
+  if (ok) Q.ok++; else Q.wrong.push(q.key);
+  Q.answered = Q.i; rec(q.key, ok); if (SESS) { SESS.n++; if (ok) SESS.ok++; }
+  send({ kind: 'answer', level: Q.mode ? Math.min(S.level, 3) : S.level, attempt: Q.mode ? Q.mode : S.att[S.level], type: q.type, correct: ok ? 1 : 0 });
+  save();
+  var last = Q.i === Q.list.length - 1;
+  document.getElementById('fb').innerHTML = '<div class="fb ' + (ok ? 'ok' : 'no') + '"><b class="t">' + (ok ? 'נכון!' : 'לא בדיוק. התשובה הנכונה: ' + LET[q.answer]) + '</b>' + q.expl + '</div><button class="btn" id="nx">' + (last ? (Q.mode ? 'סיום' : 'לסיכום הרמה') : 'לשאלה הבאה') + '</button>';
+  document.getElementById('nx').onclick = next;
   document.getElementById('fb').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
+function next() { if (Q.i === Q.list.length - 1) { if (Q.mode) Q.done(); else endLevel(); } else { Q.i++; showQ(); } }
 function endLevel() {
   var passed = Q.ok >= PASS, L = S.level;
   S.last = 'רמה ' + L + ': ' + Q.ok + '/10';
   send({ kind: 'attempt', level: L, attempt: S.att[L], score: Q.ok, passed: passed ? 1 : 0 });
   if (passed) S.level++;
   save(); send({ kind: 'state' });
-  var tally = {}; Q.wrong.forEach(function (t) { tally[t] = (tally[t] || 0) + 1; });
-  var wl = Object.keys(tally).map(function (t) { return '<li>' + esc(t) + (tally[t] > 1 ? ' (' + tally[t] + ')' : '') + '</li>'; }).join('');
+  RES = { L: L, ok: Q.ok, passed: passed, wrong: Q.wrong.slice() };
+  resultScreen();
+}
+var RES = null;
+function resultScreen() {
+  RESUME = resultScreen;
+  var L = RES.L, passed = RES.passed, Q = { ok: RES.ok, wrong: RES.wrong };
+  var tally = {}; Q.wrong.forEach(function (t) { if (TOPIC[t]) tally[t] = (tally[t] || 0) + 1; });
+  var wl = Object.keys(tally).map(function (t) { return '<button class="tp" data-t="' + t + '"><span class="dot ' + (stat(t) || 'y') + '"></span>' + TOPIC[t].n + (tally[t] > 1 ? ' (' + tally[t] + ' טעויות)' : '') + '<span class="sm">הסבר ותרגול ←</span></button>'; }).join('');
   var h = header() + '<div class="card" style="text-align:center"><p class="muted">' + LNAME[L] + '</p><div class="big">' + Q.ok + '/10</div>';
   if (passed) h += '<h2>' + (L === 3 ? 'עברתם את כל שלוש הרמות!' : 'כל הכבוד – עברתם לרמה ' + (L + 1) + '!') + '</h2>';
   else h += '<h2>עוד קצת – צריך 8 נכונות</h2><p>נתרגל שוב את אותה רמה עם שאלות חדשות.</p>';
-  if (wl) h += '<div style="text-align:start"><p class="muted" style="margin-bottom:0">כדאי לחזור על:</p><ul class="ul">' + wl + '</ul></div>';
+  if (wl) h += '<div style="text-align:start"><p class="muted" style="margin-bottom:0">' + (passed ? 'כדאי לחזור על:' : 'לפני הניסיון הבא – כדאי לחזור על:') + '</p><div class="tl">' + wl + '</div></div>';
   h += '<button class="btn ' + (passed ? 'gr' : '') + '" id="go">' + (passed ? (L === 3 ? 'לרמת האלופים ★' : 'לרמה ' + (L + 1)) : 'לנסות שוב') + '</button></div>';
   APP.innerHTML = h; window.scrollTo(0, 0);
   document.getElementById('go').onclick = route;
+  bindTopics(resultScreen);
 }
 
 /* ---------- רמה 4 ---------- */
 function lvl4Intro() {
+  RESUME = lvl4Intro; tick();
   var t, d;
   if (S.stage === 'A') { t = 'שלב א – אתגר בתשובה פתוחה'; d = 'כאן אין אפשרויות לבחירה: כותבים את התשובה בעצמכם. ענו נכון על <b>' + STREAK_GOAL + ' שאלות ברצף</b> כדי לפתוח את שלב החוקר. טעות מאפסת את הרצף.'; }
   else if (S.stage === 'B') { t = 'שלב ב – החוקר'; d = CONF.expIntro; }
@@ -752,6 +868,7 @@ function lvl4Intro() {
   document.getElementById('go').onclick = function () { if (S.stage === 'B') { Q = { list: GEN.explorer(), i: 0 }; showExp(); } else openQ(); };
 }
 function openQ() {
+  RESUME = openQ;
   var q = GEN.open(); Q = { q: q };
   var top = S.stage === 'A'
     ? '<div class="meta"><span>שלב א · רצף ' + S.streak + ' מתוך ' + STREAK_GOAL + '</span><span>★</span></div><div class="streak">' + Array.from({ length: STREAK_GOAL }, function (_, k) { return '<span class="' + (k < S.streak ? 'on' : '') + '"></span>'; }).join('') + '</div>'
@@ -766,7 +883,7 @@ function openQ() {
     inp.disabled = true; ck.style.display = 'none'; document.getElementById('ae').textContent = '';
     if (ok) { S.streak++; if (S.stage === 'C' && S.streak > S.best) S.best = S.streak; } else S.streak = 0;
     if (S.stage === 'A' && S.streak > S.best) S.best = S.streak;
-    S.open++;
+    S.open++; if (SESS) { SESS.n++; if (ok) SESS.ok++; }
     send({ kind: 'answer', level: 4, attempt: S.stage === 'A' ? 'שלב א' : 'שלב ג', type: q.type, correct: ok ? 1 : 0 });
     var unlock = S.stage === 'A' && S.streak >= STREAK_GOAL;
     if (unlock) { S.stage = 'B'; S.streak = 0; }
@@ -778,6 +895,7 @@ function openQ() {
   inp.onkeydown = function (e) { if (e.key === 'Enter') check(); };
 }
 function showExp() {
+  var myQ = Q; RESUME = function () { Q = myQ; showExp(); };
   var q = Q.list[Q.i];
   var bar = '<div class="bar"><i style="width:' + (Q.i / Q.list.length * 100) + '%"></i></div><div class="meta"><span>שלב החוקר · ' + (Q.i + 1) + ' מתוך ' + Q.list.length + '</span><span></span></div>';
   APP.innerHTML = header(bar) + '<div class="card"><p class="q">' + q.prompt + '</p>' + (q.fig ? '<div class="fig">' + q.fig + '</div>' : '') + optsHtml(q) + '<div id="fb"></div></div>';
@@ -800,6 +918,100 @@ function showExp() {
       };
     };
   });
+}
+
+/* ---------- ההתקדמות שלי ---------- */
+function bindTopics(back) { APP.querySelectorAll('[data-t]').forEach(function (b) { b.onclick = function () { topicScreen(b.dataset.t, back); }; }); }
+function backBtn(id) { return '<button class="btn sec" id="' + (id || 'bk') + '">חזרה לתרגול</button>'; }
+function progressScreen() {
+  tick(); save();
+  var back = RESUME || route, top = Math.min(S.level, 3), cnt = { g: 0, y: 0, r: 0 };
+  var h = header() + '<div class="card"><h2>ההתקדמות שלי</h2><div class="legend"><span><i class="dot g"></i>שולטים</span><span><i class="dot y"></i>כמעט</span><span><i class="dot r"></i>כדאי לחזק</span><span><i class="dot"></i>עוד לא תרגלנו</span></div>';
+  for (var L = 1; L <= 3; L++) {
+    var keys = GEN.PLAN[L].filter(function (k, i, a) { return a.indexOf(k) === i && TOPIC[k]; });
+    h += '<h3>' + LNAME[L] + (L > top ? ' 🔒' : '') + '</h3><div class="tl">';
+    keys.forEach(function (k) {
+      var st = stat(k), m = S.m[k]; if (st) cnt[st]++;
+      h += '<button class="tp" data-t="' + k + '"' + (L > top && !m ? ' disabled' : '') + '><span class="dot ' + st + '"></span>' + TOPIC[k].n + '<span class="sm">' + (m ? m.ok + '/' + m.n : '') + '</span></button>';
+    });
+    h += '</div>';
+  }
+  var mm = mins();
+  h += '<p class="muted">סה״כ זמן תרגול: ' + mm.all + ' דקות' + (mm.home ? ' (מתוכן ' + mm.home + ' מחוץ לשעות בית הספר)' : '') + '. לחצו על נושא כדי לראות הסבר, דוגמה ותרגול ממוקד.</p>' + backBtn() + '</div>';
+  APP.innerHTML = h; window.scrollTo(0, 0);
+  document.getElementById('bk').onclick = back;
+  bindTopics(progressScreen);
+}
+function topicScreen(k, back) {
+  var T0 = TOPIC[k], q = GEN.T[k](), st = stat(k), m = S.m[k];
+  var ans = q.options[q.answer];
+  var h = header() + '<div class="card"><h2>' + T0.n + '</h2>';
+  if (m) h += '<p class="muted"><span class="dot ' + st + '" style="display:inline-block;vertical-align:middle"></span> ענית נכון על ' + m.ok + ' מתוך ' + m.n + ' שאלות מהסוג הזה.</p>';
+  h += '<div class="tip"><b>מה לזכור:</b> ' + T0.t + '<div class="muted" style="margin-top:6px">בספר: ' + CONF.book + ', ' + T0.p + '</div></div>';
+  h += '<div class="ex"><b>דוגמה פתורה</b><p class="q" style="margin-top:6px">' + q.prompt + '</p>' + (q.fig ? '<div class="fig">' + q.fig + '</div>' : '') + '<div class="ans"><b>התשובה:</b> ' + ans + '</div><p style="margin:8px 0 0">' + q.expl + '</p></div>';
+  h += '<button class="btn gr" id="pr">תרגול ממוקד – 4 שאלות</button><button class="btn sec" id="bk">חזרה</button></div>';
+  APP.innerHTML = h; window.scrollTo(0, 0);
+  document.getElementById('bk').onclick = function () { (back || route)(); };
+  document.getElementById('pr').onclick = function () {
+    practice([k, k, k, k], 'תרגול ממוקד', 'ממוקד', function () { practiceDone(k, back); });
+  };
+}
+function practice(keys, title, mode, done) {
+  Q = { list: keys.map(function (k) { var x = GEN.T[k](); x.key = k; return x; }), i: 0, ok: 0, wrong: [], mode: mode, title: title, done: done };
+  showQ();
+}
+function practiceDone(k, back) {
+  var ok = Q.ok, n = Q.list.length, st = stat(k);
+  var h = header() + '<div class="card" style="text-align:center"><p class="muted">תרגול ממוקד · ' + TOPIC[k].n + '</p><div class="big">' + ok + '/' + n + '</div>';
+  h += '<p>' + (st === 'g' ? 'מצוין – הנושא הזה עכשיו ירוק! 🎉' : ok >= n - 1 ? 'יפה מאוד – עוד קצת והנושא יהיה ירוק.' : 'שווה לקרוא שוב את ההסבר ולנסות עוד סבב.') + '</p>';
+  h += '<button class="btn" id="ag">עוד סבב</button><button class="btn sec" id="bk">חזרה</button></div>';
+  APP.innerHTML = h; window.scrollTo(0, 0);
+  document.getElementById('ag').onclick = function () { topicScreen(k, back); };
+  document.getElementById('bk').onclick = function () { (back || route)(); };
+}
+
+/* ---------- חימום כשחוזרים ---------- */
+function warmIntro() {
+  RESUME = route;
+  var w = weak(), keys = [w[0], w[1] || w[0], w[2] || w[0]];
+  var h = header() + '<div class="card"><h2>ברוכים השבים! 👋</h2><p>לפני שממשיכים – 3 שאלות חימום מהנושאים שכדאי לחזק:</p><ul class="ul">' + w.slice(0, 3).map(function (k) { return '<li>' + TOPIC[k].n + '</li>'; }).join('') + '</ul>';
+  h += '<button class="btn gr" id="go">לחימום</button><button class="btn sec" id="sk">דלגו, ישר לתרגול</button></div>';
+  APP.innerHTML = h;
+  document.getElementById('sk').onclick = route;
+  document.getElementById('go').onclick = function () {
+    practice(keys, 'חימום', 'חימום', function () {
+      var ok = Q.ok;
+      APP.innerHTML = header() + '<div class="card" style="text-align:center"><p class="muted">חימום</p><div class="big">' + ok + '/3</div><p>' + (ok === 3 ? 'מעולה – זכרתם הכול!' : ok === 2 ? 'יפה! עוד חיזוק קטן ואתם שם.' : 'טוב שחזרנו על זה. אפשר לראות הסבר ב"ההתקדמות שלי".') + '</p><button class="btn gr" id="go">ממשיכים לתרגל</button></div>';
+      document.getElementById('go').onclick = route;
+    });
+  };
+}
+
+/* ---------- סיימתי להיום ---------- */
+function endSession() {
+  tick(); if (!SESS) newSession();
+  SESS.nudged = true; save(); send({ kind: 'state' });
+  var back = RESUME || route, mm = Math.max(1, Math.round(SESS.sec / 60));
+  var up = [], strong = [];
+  Object.keys(S.m).forEach(function (k) {
+    if (!TOPIC[k]) return; var now = stat(k), was = SESS.snap[k] || '';
+    var rank = { '': 0, r: 1, y: 2, g: 3 };
+    if (rank[now] > rank[was] && was) up.push(k);
+    if (now === 'g') strong.push(k);
+  });
+  var w = weak().slice(0, 3);
+  var h = header() + '<div class="card"><h2>סיכום לתרגול של היום</h2>';
+  h += '<div class="stat"><div>דקות<b>' + mm + '</b></div><div>שאלות<b>' + SESS.n + '</b></div><div>נכונות<b>' + SESS.ok + '</b></div></div>';
+  if (up.length) h += '<h3>📈 השתפרתם היום ב:</h3><ul class="ul">' + up.map(function (k) { return '<li>' + TOPIC[k].n + '</li>'; }).join('') + '</ul>';
+  if (strong.length) h += '<h3>✅ אתם שולטים ב:</h3><p style="margin:0">' + strong.map(function (k) { return TOPIC[k].n; }).join(' · ') + '</p>';
+  if (w.length) h += '<h3>🎯 כדאי לחזק בפעם הבאה:</h3><div class="tl">' + w.map(function (k) { return '<button class="tp" data-t="' + k + '"><span class="dot ' + stat(k) + '"></span>' + TOPIC[k].n + '<span class="sm">הסבר ותרגול ←</span></button>'; }).join('') + '</div>';
+  else if (SESS.n) h += '<p>אין כרגע נושא שצריך לחזק – כל הכבוד! 🌟</p>';
+  var t = taskProg(); if (t) h += '<p>' + (t.done ? '✓ השלמתם את המשימה.' : 'המשימה: ' + t.text + (TASK.due ? ' עד ' + dueTxt(TASK.due) : '') + '.') + '</p>';
+  h += '<p class="muted">ההתקדמות נשמרה. אפשר להמשיך מכל טלפון או מחשב – נכנסים עם אותו שם, בית ספר וכיתה.</p>';
+  h += '<button class="btn sec" id="bk">להמשיך לתרגל</button></div>';
+  APP.innerHTML = h; window.scrollTo(0, 0);
+  document.getElementById('bk').onclick = back;
+  bindTopics(endSession);
 }
 
 startScreen();
