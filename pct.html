@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מסע האחוזים – ח1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: מחברת חשבון של תלמיד – ברור, חם, לא ילדותי
+   IDEA: דף משבצות; כל רמה היא עמוד במחברת
+   PICTURE: הגרף/הטבלה של השאלה הוא המרכז של המסך
+   COLOUR and TYPE: לבן משבצות, דיו כהה, ירוק גרף, כתום לסימון; Rubik
+   LAYOUT: טור אחד לטלפון, כפתורים גדולים, פס התקדמות למעלה */
+:root{--bg:#fbfaf6;--ink:#1d2433;--soft:#5b6475;--line:#e6e2d6;--green:#1f8a70;--greenbg:#e3f4ee;--orange:#e4572e;--orangebg:#fde9e2;--card:#fff}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0}
+body{background:var(--bg);background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:22px 22px;color:var(--ink);font:17px/1.55 Rubik,Arial,sans-serif;min-height:100vh;overflow-x:clip}
+.wrap{max-width:560px;margin:0 auto;padding:14px 14px 40px}
+.top{position:sticky;top:0;z-index:5;background:rgba(251,250,246,.96);backdrop-filter:blur(4px);margin:0 -14px 10px;padding:10px 14px;border-bottom:1px solid var(--line)}
+.lv{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.chip{min-width:34px;height:34px;border-radius:17px;display:grid;place-items:center;font-weight:700;font-size:15px;border:2px solid var(--line);background:#fff;color:var(--soft)}
+.chip.done{background:var(--green);border-color:var(--green);color:#fff}
+.chip.now{border-color:var(--ink);color:var(--ink)}
+.who{margin-inline-start:auto;font-size:14px;color:var(--soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:45%}
+.bar{height:8px;background:#ece8dc;border-radius:4px;margin-top:9px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green);border-radius:4px;transition:width .3s}
+.meta{display:flex;justify-content:space-between;font-size:14px;color:var(--soft);margin-top:5px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 16px;box-shadow:0 2px 0 rgba(29,36,51,.05)}
+h1{font-size:30px;line-height:1.1;margin:8px 0 6px;text-wrap:balance}
+h2{font-size:23px;line-height:1.2;margin:0 0 8px}
+.q{font-size:19px;font-weight:500;margin:0 0 12px}
+.m{font-family:"Times New Roman",Times,serif;font-style:italic;font-size:1.08em;white-space:nowrap;unicode-bidi:isolate}
+.fig{margin:6px 0 14px;display:flex;justify-content:center}
+svg.g{width:100%;max-width:330px;height:auto;border-radius:8px}
+svg.g.sm{max-width:none}
+svg.qfig{width:100%;max-width:330px;height:auto;border-radius:8px;border:1px solid var(--line)}
+.gl{stroke:#dfe3ea;stroke-width:1}.ax{stroke:#1d2433;stroke-width:1.6}.ln{stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.g text{direction:ltr;unicode-bidi:bidi-override}.tk{fill:#5b6475;font-family:Rubik,Arial,sans-serif}.al{fill:#1d2433;font-style:italic;font-family:"Times New Roman",serif}
+table.vt{border-collapse:collapse;margin:0 auto;font-size:17px;background:#fff}
+table.vt th,table.vt td{border:1.5px solid #9aa3b2;padding:6px 10px;text-align:center;font-family:"Times New Roman",serif}
+table.vt th{background:#eef1f5;font-style:italic}
+.opts{display:grid;gap:10px}
+.opts.svg,.opts.tbl{grid-template-columns:1fr 1fr}
+.opt{display:flex;gap:10px;align-items:center;width:100%;min-height:54px;padding:10px 12px;border:2px solid var(--line);border-radius:14px;background:#fff;font:inherit;color:inherit;text-align:start;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.opts.svg .opt,.opts.tbl .opt{flex-direction:column;padding:8px}
+.opt .let{flex:none;width:28px;height:28px;border-radius:14px;background:#eef1f5;display:grid;place-items:center;font-weight:700;font-size:14px}
+.opts.tbl table.vt{font-size:14px}.opts.tbl table.vt td,.opts.tbl table.vt th{padding:3px 6px}
+.opt:focus-visible,.btn:focus-visible,input:focus-visible{outline:3px solid #2b6cb0;outline-offset:2px}
+.opt.ok{border-color:var(--green);background:var(--greenbg)}
+.opt.no{border-color:var(--orange);background:var(--orangebg)}
+.opt[disabled]{cursor:default}
+.fb{margin-top:14px;padding:14px;border-radius:14px;font-size:16px}
+.fb.ok{background:var(--greenbg);border:1px solid #b6e0d2}
+.fb.no{background:var(--orangebg);border:1px solid #f4c3b3}
+.fb b.t{display:block;font-size:18px;margin-bottom:4px}
+.hint{margin-top:12px;padding:12px;border-radius:12px;background:#fff7d6;border:1px solid #f0e1a0;font-size:16px}
+.btn{display:block;width:100%;min-height:52px;margin-top:14px;border:0;border-radius:14px;background:var(--ink);color:#fff;font:700 18px Rubik,Arial,sans-serif;cursor:pointer}
+.btn.sec{background:#fff;color:var(--ink);border:2px solid var(--ink)}
+.btn.gr{background:var(--green)}
+select.name{appearance:auto}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+input.name,select.name,input.ans{width:100%;min-height:52px;border:2px solid #c9cfda;border-radius:12px;padding:10px 14px;font:18px Rubik,Arial,sans-serif;background:#fff;color:var(--ink)}
+input.ans{direction:ltr;text-align:center;font-size:22px}
+.big{font-size:58px;font-weight:700;line-height:1;margin:8px 0}
+.muted{color:var(--soft);font-size:15px}
+.ul{margin:8px 0 0;padding-inline-start:20px}
+.streak{display:flex;gap:6px;margin:4px 0 12px}
+.streak span{flex:1;height:10px;border-radius:5px;background:#ece8dc}
+.streak span.on{background:var(--orange)}
+.stat{display:flex;gap:10px;margin:6px 0 12px}
+.stat div{flex:1;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.stat b{display:block;font-size:28px}
+.err{color:var(--orange);font-size:15px;margin-top:8px}
+.demo{background:#fff7d6;border:1px solid #f0e1a0;border-radius:10px;padding:6px 10px;font-size:14px;margin:0 0 8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}.demo button{min-width:36px;min-height:36px;border:1px solid #c9b860;border-radius:8px;background:#fff;font:700 15px Rubik,Arial,sans-serif;cursor:pointer}
+.pg{width:100%;max-width:300px;height:auto}
+.bars{width:100%;max-width:360px;display:grid;gap:8px}.br{display:grid;grid-template-columns:5.5em 1fr 3em;gap:8px;align-items:center;font-size:15px}.bb{height:18px;background:#ece8dc;border-radius:4px;overflow:hidden}.bb i{display:block;height:100%;background:#3b6fb6}.bv{direction:ltr;text-align:left;font-weight:700}
+.shake{animation:sh .35s}
+@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@media(prefers-reduced-motion:reduce){.shake{animation:none}.bar i{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+var CONF = {"app":"pct","ls":"pctq_v1","title":"מסע האחוזים","page":"מסע האחוזים – ח1","sub":"ח׳1 · אחוזים – חזרה (כיוון ח׳ כרך ב׳, פרק 1)","ldesc":{"1":"אחוזים כשבר וכמספר עשרוני, אחוז מתוך שרטוט, אחוזים נוחים כמו 10% ו־25%, וכמה אחוזים הם חלק מהשלם.","2":"חלק מהשלם, השלם מתוך חלק, מחיר אחרי הגדלה או הקטנה, הגדלה והקטנה ככפל, אחוז השינוי, אחוזים מעל 100%.","3":"שינויים רצופים, מחיר מקורי לפני שינוי, רווח, אחוזים מהנותרים, \"גדול ב־ / קטן ב־\", דיאגרמה ושאלות הבנה."},"expIntro":"סדרה של 6 שאלות שבהן תגלו למה עלייה ב־20% ואחריה ירידה ב־20% לא מחזירות למחיר המקורי. אם טעיתם – תקבלו רמז ותנסו שוב. אין כאן ציון.","expDone":"בשינויים רצופים כל אחוז מחושב מהערך \u003cb>שלפניו\u003c/b>, ולכן מכפילים את המכפלות (למשל \u003cspan class=\"m\" dir=\"ltr\">1.2 · 0.8 = 0.96\u003c/span>) ולא מחברים אחוזים."};
+/* מחוללי שאלות – אחוזים, ח1 (ארכימדס "כיוון" ח כרך ב, פרק 1, עמ' 4–30) */
+var GEN = (function () {
+  function ri(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function shuffle(arr) { var a = arr.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function near(a, b) { return Math.abs(a - b) < 1e-9; }
+  function r2(n) { return Math.round(n * 1000) / 1000; }
+  function fmt(n) { n = r2(n); var s = String(Math.abs(n)); return (n < 0 ? '−' : '') + s; }
+  function M(s) { return '<span class="m" dir="ltr">' + s + '</span>'; }
+  function P(v) { return fmt(v) + '%'; }               // אחוז בטקסט עברי
+  function N(v) { return fmt(v); }                      // מספר
+  function S(v) { return fmt(v) + ' ש"ח'; }             // שקלים
+  function gcd(a, b) { return b ? gcd(b, a % b) : a; }
+  function frac(n, d) { var g = gcd(n, d); return M((n / g) + '/' + (d / g)); }
+  function isNice(v) { return Number.isInteger(r2(v * 2)); }
+
+  function finalize(correctHtml, wrongHtmls) {
+    var seen = {}; seen[correctHtml] = 1; var w = [];
+    for (var i = 0; i < wrongHtmls.length && w.length < 3; i++) { var h = wrongHtmls[i]; if (h == null || seen[h]) continue; seen[h] = 1; w.push(h); }
+    if (w.length < 3) throw new Error('not enough distractors: ' + correctHtml);
+    var all = shuffle([{ h: correctHtml, ok: true }].concat(w.map(function (h) { return { h: h, ok: false }; })));
+    return { options: all.map(function (o) { return o.h; }), answer: all.findIndex(function (o) { return o.ok; }) };
+  }
+  // מסיחים מספריים: חיוביים, "נוחים" (כפולות של 0.5) ושונים מהתשובה
+  function numOpts(correct, cands, wrap, anyDec) {
+    wrap = wrap || N;
+    var vals = [], seen = [correct];
+    function add(v) { if (!isFinite(v) || v <= 0) return; v = r2(v); if (!anyDec && !isNice(v)) return; for (var k = 0; k < seen.length; k++) if (near(seen[k], v)) return; seen.push(v); vals.push(v); }
+    cands.forEach(add);
+    var fb = [correct * 2, correct / 2, correct + 10, correct + 5, correct - 5, correct + 1, correct - 1, correct * 10, correct + 20];
+    for (var i = 0; vals.length < 3 && i < fb.length; i++) add(fb[i]);
+    var r = finalize(wrap(correct), vals.slice(0, 3).map(wrap));
+    r.val = function (i) { return parseNum(r.options[i]); };
+    return r;
+  }
+  function stripM(h) { return String(h).replace(/<[^>]+>/g, '').replace(/&lt;/g, '<'); }
+  function parseNum(h) { return Number(stripM(h).replace(/−/g, '-').replace(/[^\d.\-]/g, '')); }
+  function mk(type, prompt, r, expl, ok, extra) {
+    var q = { type: type, prompt: prompt, fig: '', options: r.options, answer: r.answer, expl: expl, check: function (i) { return ok(i); } };
+    if (extra) for (var k in extra) q[k] = extra[k];
+    return q;
+  }
+
+  /* ---------- שרטוטים ---------- */
+  function grid(n, cols, k) { // n משבצות, cols בשורה, k צבועות
+    var rows = n / cols, c = 26, W = cols * c, H = rows * c;
+    var s = '<svg class="pg" viewBox="0 0 ' + (W + 2) + ' ' + (H + 2) + '" xmlns="http://www.w3.org/2000/svg" role="img">';
+    for (var i = 0; i < n; i++) { var x = (i % cols) * c + 1, y = Math.floor(i / cols) * c + 1; s += '<rect x="' + x + '" y="' + y + '" width="' + c + '" height="' + c + '" fill="' + (i < k ? '#3b6fb6' : '#fff') + '" stroke="#9aa3b2" stroke-width="1"/>'; }
+    return s + '</svg>';
+  }
+  function bars(items) { // [label, pct]
+    return '<div class="bars">' + items.map(function (it) { return '<div class="br"><span class="bl">' + it[0] + '</span><span class="bb"><i style="width:' + it[1] + '%"></i></span><span class="bv">' + it[1] + '%</span></div>'; }).join('') + '</div>';
+  }
+
+  var T = {};
+  /* ================= רמה 1 ================= */
+  T.pctToFrac = function () {
+    var p = pick([10, 20, 25, 50, 75, 5, 40, 30, 60, 80, 2, 4]);
+    var cands = [frac(p, 10), frac(1, p), frac(p, 1000), frac(100 - p, 100), frac(1, 100 - p > 1 ? 100 - p : 3)].filter(function (h) { return h !== frac(p, 100); });
+    var vals = function (h) { var m = stripM(h).split('/'); return Number(m[0]) / Number(m[1]); };
+    var C = frac(p, 100), r = finalize(C, shuffle(cands).filter(function (h) { return !near(vals(h), p / 100); }));
+    return mk('אחוז כשבר', 'איזה שבר שווה ל־' + P(p) + '?', r, P(p) + ' הם ' + p + ' חלקים מתוך 100: ' + M(p + '/100') + ', ובצמצום ' + C + '.', function (i) { return near(vals(r.options[i]), p / 100); });
+  };
+  T.pctDec = function () {
+    var p = pick([7, 35, 60, 4, 125, 12, 90, 3, 45, 150]);
+    if (Math.random() < 0.5) {
+      var r = numOpts(p / 100, [p / 10, p, p / 1000, p / 100 * 10], function (v) { return M(N(v)); }, true);
+      return mk('אחוז כמספר עשרוני', 'איך כותבים ' + P(p) + ' כמספר עשרוני?', r, P(p) + ' הם ' + M(p + '/100') + ', כלומר ' + M(N(p / 100)) + '. מחלקים ב־100: הנקודה העשרונית זזה שני מקומות שמאלה.', function (i) { return near(r.val(i), p / 100); });
+    }
+    var r2_ = numOpts(p, [p / 10, p / 100, p * 10], P);
+    return mk('מספר עשרוני כאחוז', 'המספר ' + M(N(p / 100)) + ' שווה ל:', r2_, M(N(p / 100) + ' = ' + p + '/100') + ', כלומר ' + P(p) + '. כופלים ב־100.', function (i) { return near(r2_.val(i), p); });
+  };
+  T.fracToPct = function () {
+    var d = pick([2, 4, 5, 10, 20, 25, 50]), n = ri(1, d - 1); if (gcd(n, d) !== 1 && d !== 10) n = 1;
+    var p = n / d * 100;
+    var r = numOpts(p, [n, d, n * 10, 100 - p, d * n], P);
+    return mk('שבר כאחוז', 'השבר ' + frac(n, d) + ' שווה ל:', r, 'מרחיבים כך שהמכנה יהיה 100: ' + M(n + '/' + d + ' = ' + N(p) + '/100') + ', כלומר ' + P(p) + '.', function (i) { return near(r.val(i), p); });
+  };
+  T.grid = function () {
+    var v = Math.random() < 0.6, n = v ? 100 : 20, cols = 10, k = v ? ri(3, 97) : ri(1, 19), p = k / n * 100;
+    var r = numOpts(p, v ? [100 - p, k / 10, p + 10] : [k, 100 - p, k * 10, n - k], P);
+    return mk('אחוז מתוך שרטוט', 'איזה אחוז מהמשבצות צבוע בכחול?', r,
+      v ? 'יש 100 משבצות, ו־' + k + ' מהן צבועות: ' + k + ' מתוך 100 הם ' + P(p) + '.' : 'יש 20 משבצות, ו־' + k + ' מהן צבועות: ' + M(k + '/20 = ' + N(p) + '/100') + ', כלומר ' + P(p) + '.',
+      function (i) { return near(r.val(i), p); }, { fig: grid(n, cols, k) });
+  };
+  T.easyPart = function () {
+    var p = pick([10, 50, 25, 20, 5, 1]), X = pick(p === 25 ? [40, 80, 120, 200, 400] : p === 1 ? [300, 500, 800, 1200] : [40, 60, 80, 120, 200, 300, 500]), a = X * p / 100;
+    var r = numOpts(a, [X / p, X * p / 10, X - a, X / 10 === a ? X / 5 : X / 10]);
+    return mk('חלק מהשלם (אחוזים נוחים)', 'כמה הם ' + P(p) + ' מ־' + N(X) + '?', r,
+      { 10: 'כדי למצוא 10% מחלקים ב־10', 50: '50% הם חצי', 25: '25% הם רבע', 20: '20% הם חמישית', 5: '5% הם חצי מ־10%', 1: '1% הוא חלק מאה' }[p] + ': ' + P(p) + ' מ־' + N(X) + ' הם ' + N(a) + '.',
+      function (i) { return near(r.val(i), a); });
+  };
+  T.whatPct = function () {
+    var b = pick([20, 25, 50, 40, 200, 10]), p = pick([10, 20, 25, 30, 40, 50, 60, 75, 80]), a = b * p / 100;
+    if (!Number.isInteger(a)) return T.whatPct();
+    var r = numOpts(p, [a, b - a, a / b * 10, 100 - p], P);
+    return mk('כמה אחוזים הם חלק מהשלם', 'כמה אחוזים הם ' + N(a) + ' מתוך ' + N(b) + '?', r,
+      'מחשבים את החלק מהשלם: ' + M(a + '/' + b + ' = ' + N(p) + '/100') + ', כלומר ' + P(p) + '.', function (i) { return near(r.val(i), p); });
+  };
+  var DEF = [
+    ['מה פירוש 1%?', 'חלק אחד מתוך 100 חלקים שווים של הכמות', ['חלק אחד מתוך 10 חלקים של הכמות', 'הכמות כולה', 'מאה פעמים הכמות']],
+    ['100% מכמות מסוימת הם:', 'הכמות כולה', ['מאית מהכמות', 'חצי מהכמות', 'פי 100 מהכמות']],
+    ['40% מתלמידי הכיתה הן בנות. איזה אחוז מהתלמידים הם בנים?', '60%', ['40%', '50%', '140%']],
+    ['אחוזים הם שברים שהמכנה שלהם הוא:', '100', ['10', '1000', 'המספר הגדול ביותר בשאלה']],
+    ['איזה מהבאים שווה ל־50%?', 'חצי', ['רבע', 'חמישית', 'פי 2']],
+    ['200% מכמות מסוימת הם:', 'פי 2 מהכמות', ['חצי מהכמות', 'הכמות כולה', 'פי 200 מהכמות']]
+  ];
+  T.concept = function () {
+    var d = pick(DEF), r = finalize(d[1], shuffle(d[2]));
+    return mk('הבנה: מהם אחוזים', d[0], r, 'אחוזים הם שברים שהמכנה שלהם הוא 100: 1% הוא מאית מהכמות, ו־100% הם הכמות כולה. התשובה: ' + d[1] + '.', function (i) { return r.options[i] === d[1]; });
+  };
+
+  /* ================= רמה 2 ================= */
+  T.part = function () {
+    var p = pick([15, 35, 45, 12, 8, 65, 30, 70, 120, 150, 3]), X = pick([20, 40, 60, 80, 120, 200, 300, 400, 500, 600]), a = X * p / 100;
+    if (!isNice(a)) return T.part();
+    var r = numOpts(a, [X * p / 10, X - a, X + a, p, X / p * 10]);
+    return mk('חלק מהשלם', 'כמה הם ' + P(p) + ' מ־' + N(X) + '?', r, 'כופלים בשבר: ' + M(p + '/100 · ' + X + ' = ' + N(a)) + '.', function (i) { return near(r.val(i), a); });
+  };
+  T.whole = function () {
+    var p = pick([10, 20, 25, 30, 40, 5, 15, 60, 75]), X = pick([40, 60, 80, 120, 200, 240, 300, 400]), a = X * p / 100;
+    if (!Number.isInteger(a)) return T.whole();
+    var ctx = pick([['תלמידים בכיתה', 'מהתלמידים הגיעו לטיול', 'כמה תלמידים יש בכיתה?'], ['דפים בספר', 'מהדפים כבר נקראו', 'כמה דפים יש בספר?'], ['כרטיסים להצגה', 'מהכרטיסים כבר נמכרו', 'כמה כרטיסים יש להצגה?']]);
+    var useCtx = Math.random() < 0.5;
+    var r = numOpts(X, [a * p / 100, a + p, a * p, a * 100 / (100 - p)]);
+    return mk('השלם מתוך חלק', useCtx ? N(a) + ' ' + ctx[0].split(' ')[0] + ' הם ' + P(p) + ' מכל ה' + ctx[0] + '. ' + ctx[2] : 'ידוע ש־' + N(a) + ' הם ' + P(p) + ' ממספר מסוים. מהו המספר?', r,
+      'השלם הוא הנעלם x: ' + M(p + '/100 = ' + a + '/x') + ', ולכן ' + M('x = ' + a + ' · 100 : ' + p + ' = ' + N(X)) + '.', function (i) { return near(r.val(i), X); });
+  };
+  T.newVal = function () {
+    var up = Math.random() < 0.5, p = pick([10, 20, 25, 30, 15, 40, 50]), X = pick([40, 60, 80, 120, 200, 240, 300, 500]), d = X * p / 100, Y = up ? X + d : X - d;
+    if (!isNice(d)) return T.newVal();
+    var r = numOpts(Y, [d, up ? X - d : X + d, up ? X + p : X - p, X * p], S);
+    return mk('ערך אחרי הגדלה או הקטנה', 'מחיר של מוצר היה ' + S(X) + '. המחיר ' + (up ? 'עלה' : 'ירד') + ' ב־' + P(p) + '. מה המחיר החדש?', r,
+      P(p) + ' מ־' + N(X) + ' הם ' + N(d) + '. ' + (up ? 'מוסיפים' : 'מחסירים') + ': ' + M(X + (up ? ' + ' : ' − ') + N(d) + ' = ' + N(Y)) + '. או בכפל אחד: ' + M(N(1 + (up ? 1 : -1) * p / 100) + ' · ' + X + ' = ' + N(Y)) + '.',
+      function (i) { return near(r.val(i), Y); });
+  };
+  T.mult = function () {
+    var up = Math.random() < 0.5, p = pick([10, 15, 20, 30, 35, 40, 5, 60, 12]), m = up ? 1 + p / 100 : 1 - p / 100;
+    if (Math.random() < 0.5) {
+      var r = numOpts(m, [up ? 1 - p / 100 : 1 + p / 100, p / 100, 1 + p / 10, p / 10], function (v) { return M(N(v)); }, true);
+      return mk('הגדלה והקטנה ככפל', (up ? 'הגדלה' : 'הקטנה') + ' של מספר ב־' + P(p) + ' שקולה לכפל המספר ב:', r,
+        (up ? M('(1 + ' + p + '/100) · x') : M('(1 − ' + p + '/100) · x')) + ' = ' + M(N(m) + 'x') + '.', function (i) { return near(r.val(i), m); });
+    }
+    var C = (up ? 'הגדלה ב־' : 'הקטנה ב־') + P(p);
+    var W = [(up ? 'הקטנה ב־' : 'הגדלה ב־') + P(p), (up ? 'הגדלה ב־' : 'הקטנה ב־') + P(up ? 100 + p : 100 - p), (up ? 'הגדלה ב־' : 'הקטנה ב־') + P(r2(m))];
+    if (!up) W.push('הקטנה ב־' + P(100 - p));
+    var r2_ = finalize(C, W);
+    return mk('הגדלה והקטנה ככפל', 'המספר ' + M(N(m) + 'x') + ' מתקבל מ־x על ידי:', r2_,
+      (up ? M(N(m) + ' = 1 + ' + N(p / 100)) + ' – מוסיפים ' + P(p) : M(N(m) + ' = 1 − ' + N(p / 100)) + ' – מורידים ' + P(p)) + ' מ־x.', function (i) { return r2_.options[i] === C; });
+  };
+  T.change = function () {
+    var up = Math.random() < 0.5, A = pick([20, 40, 50, 80, 200, 250, 25, 60]), p = pick([10, 20, 25, 40, 50, 60, 75, 5]), d = A * p / 100, B = up ? A + d : A - d;
+    if (!Number.isInteger(d)) return T.change();
+    var r = numOpts(p, [d, r2(d / B * 100), B / A * 100, A === 100 ? 1 : d * 10], P);
+    return mk('אחוז השינוי', (up ? 'מספר המשתתפים גדל מ־' : 'מספר המשתתפים קטן מ־') + N(A) + ' ל־' + N(B) + '. בכמה אחוזים ' + (up ? 'גדל' : 'קטן') + ' מספר המשתתפים?', r,
+      'השינוי הוא ' + N(d) + ', ומחשבים אותו ביחס לכמות <b>המקורית</b> (' + N(A) + '): ' + M(d + '/' + A + ' = ' + N(p) + '/100') + ', כלומר ' + P(p) + '.', function (i) { return near(r.val(i), p); });
+  };
+  T.over100 = function () {
+    var b = pick([20, 40, 50, 80, 200]), p = pick([120, 150, 125, 200, 175, 250]), a = b * p / 100;
+    if (!Number.isInteger(a)) return T.over100();
+    var r = numOpts(p, [p - 100, b / a * 100, a, 100], P);
+    return mk('אחוזים מעל 100%', 'כמה אחוזים הם ' + N(a) + ' מתוך ' + N(b) + '?', r, 'החלק גדול מהשלם, ולכן התשובה גדולה מ־100%: ' + M(a + '/' + b + ' = ' + N(p) + '/100') + ', כלומר ' + P(p) + '.', function (i) { return near(r.val(i), p); });
+  };
+
+  /* ================= רמה 3 ================= */
+  T.successive = function () {
+    var X = pick([100, 200, 400, 500, 1000]), p = pick([10, 20, 25, 50]), q = pick([10, 20, 25, 50]), upFirst = Math.random() < 0.5;
+    var m1 = upFirst ? 1 + p / 100 : 1 - p / 100, m2 = upFirst ? 1 - q / 100 : 1 + q / 100, Y = r2(X * m1 * m2), naive = X * (1 + (upFirst ? p - q : q - p) / 100);
+    if (!isNice(Y)) return T.successive();
+    var r = numOpts(Y, [naive, X * m1, X * m2, X], S);
+    return mk('שינויים רצופים', 'מחיר של מוצר היה ' + S(X) + '. ביום א\' המחיר ' + (upFirst ? 'עלה' : 'ירד') + ' ב־' + P(p) + ', וביום ב\' ' + (upFirst ? 'ירד' : 'עלה') + ' ב־' + P(q) + '. מה המחיר בסוף יום ב\'?', r,
+      'כל שינוי מחושב מהמחיר שהיה לפניו: ' + M(N(m1) + ' · ' + N(m2) + ' · ' + X + ' = ' + N(Y)) + '. לא מחברים ומחסירים את האחוזים.', function (i) { return near(r.val(i), Y); });
+  };
+  T.successivePct = function () {
+    var a = pick([10, 20, 50, 25]), b = pick([10, 20, 50, 25]), kind = pick(['upup', 'updown', 'updown']);
+    var m = kind === 'upup' ? (1 + a / 100) * (1 + b / 100) : (1 + a / 100) * (1 - b / 100), t = r2((m - 1) * 100);
+    if (!Number.isInteger(t) || t === 0) return T.successivePct();
+    var desc = function (v) { return v > 0 ? 'גדל ב־' + P(v) : 'קטן ב־' + P(-v); };
+    var C = desc(t), naive = kind === 'upup' ? a + b : a - b;
+    var W = [naive === 0 ? 'חזר לערכו המקורי' : desc(naive), desc(-t), kind === 'upup' ? desc(b) : desc(a), 'חזר לערכו המקורי', desc(t + 10)].filter(function (w) { return w !== C; });
+    var r = finalize(C, W);
+    return mk('שינויים רצופים באחוזים', 'מספר x ' + 'גדל ב־' + P(a) + ', ואחר כך ' + (kind === 'upup' ? 'גדל' : 'קטן') + ' ב־' + P(b) + '. בסך הכול, x:', r,
+      'מכפילים את המכפלות: ' + M(N(1 + a / 100) + ' · ' + N(kind === 'upup' ? 1 + b / 100 : 1 - b / 100) + ' = ' + N(m)) + ', ולכן x ' + C + '.', function (i) { return r.options[i] === C; });
+  };
+  T.original = function () {
+    var up = Math.random() < 0.5, p = pick([10, 20, 25, 50, 40, 30]), X = pick([20, 40, 60, 80, 120, 200, 300]), Y = X * (up ? 1 + p / 100 : 1 - p / 100);
+    if (!isNice(Y)) return T.original();
+    var r = numOpts(X, [Y * (up ? 1 - p / 100 : 1 + p / 100), up ? Y - p : Y + p, Y], S);
+    return mk('המחיר המקורי לפני שינוי', 'אחרי ' + (up ? 'התייקרות' : 'הוזלה') + ' של ' + P(p) + ', המחיר של מוצר הוא ' + S(Y) + '. מה היה המחיר המקורי?', r,
+      'המחיר המקורי x: ' + M(N(up ? 1 + p / 100 : 1 - p / 100) + 'x = ' + N(Y)) + ', ולכן ' + M('x = ' + N(Y) + ' : ' + N(up ? 1 + p / 100 : 1 - p / 100) + ' = ' + N(X)) + '. (לא מחשבים ' + P(p) + ' מהמחיר החדש!)',
+      function (i) { return near(r.val(i), X); });
+  };
+  T.profit = function () {
+    var n = pick([10, 20, 40, 50]), c = pick([10, 20, 25, 30, 40]), p = pick([10, 20, 25, 30, 50]), prof = n * c * p / 100;
+    var r = numOpts(prof, [c * p / 100, n * c, n * c + prof, n * p], S);
+    return mk('רווח באחוזים', 'סוחר קנה ' + n + ' מחברות ב־' + S(c) + ' כל אחת, ומכר כל מחברת במחיר גבוה ב־' + P(p) + ' ממה ששילם. מה הרווח של הסוחר מכל המחברות?', r,
+      'הרווח ממחברת אחת: ' + P(p) + ' מ־' + N(c) + ' = ' + N(c * p / 100) + ' ש"ח. מ־' + n + ' מחברות: ' + M(n + ' · ' + N(c * p / 100) + ' = ' + N(prof)) + ' ש"ח.', function (i) { return near(r.val(i), prof); });
+  };
+  T.remainder = function () {
+    var Nn = pick([200, 400, 500, 800]), a = pick([20, 25, 40, 50]), b = pick([10, 20, 25, 50]), rest = Nn * (100 - a) / 100, ans = rest * b / 100;
+    if (!Number.isInteger(ans)) return T.remainder();
+    var r = numOpts(ans, [Nn * b / 100, Nn * a / 100, rest, rest - ans]);
+    return mk('אחוזים מהנותרים', 'בבית ספר ' + Nn + ' תלמידים. ' + P(a) + ' מהם נוסעים באוטובוס. מבין שאר התלמידים, ' + P(b) + ' מגיעים באופניים. כמה תלמידים מגיעים באופניים?', r,
+      'קודם הנותרים: ' + M('(100% − ' + a + '%) · ' + Nn + ' = ' + N(rest)) + '. אחר כך ' + P(b) + ' מהם: ' + N(ans) + '.', function (i) { return near(r.val(i), ans); });
+  };
+  T.asym = function () {
+    var pq = pick([[25, 20], [100, 50], [150, 60], [300, 75], [400, 80]]), B = pick([20, 40, 60, 80, 100]), A = B * (1 + pq[0] / 100);
+    var r = numOpts(pq[1], [pq[0], 100 - pq[1] === pq[1] ? pq[1] + 5 : 100 - pq[1], pq[0] / 2], P);
+    return mk('גדול ב־ / קטן ב־', 'המספר ' + N(A) + ' גדול ב־' + P(pq[0]) + ' מהמספר ' + N(B) + '. בכמה אחוזים ' + N(B) + ' קטן מ־' + N(A) + '?', r,
+      'ההפרש הוא ' + N(A - B) + ', אבל עכשיו משווים ל־' + N(A) + ': ' + M(N(A - B) + '/' + N(A) + ' = ' + N(pq[1]) + '/100') + '. לכן ' + N(B) + ' קטן מ־' + N(A) + ' ב־' + P(pq[1]) + ' – לא באותו אחוז!', function (i) { return near(r.val(i), pq[1]); });
+  };
+  T.truth = function () {
+    var pool = [
+      ['הגדלה ב־100% היא הכפלה פי 2.', true], ['200% מ־x הם 2x.', true], ['הקטנה ב־50% שקולה לחלוקה ב־2.', true], ['הכפלה ב־0.7 היא הקטנה ב־30%.', true],
+      ['הגדלה ב־10% ואחר כך עוד 10% שווה להגדלה של 20% בדיוק.', false], ['הגדלה ב־20% ואחר כך הקטנה ב־20% מחזירה לערך המקורי.', false],
+      ['הכפלה ב־0.7 היא הקטנה ב־70%.', false], ['אם A גדול מ־B ב־50%, אז B קטן מ־A ב־50%.', false], ['אחוזים לא יכולים להיות יותר מ־100%.', false], ['הכפלה ב־1.5 היא הגדלה ב־150%.', false]
+    ];
+    var T1 = pick(pool.filter(function (q) { return q[1]; })), F = shuffle(pool.filter(function (q) { return !q[1]; })).slice(0, 3);
+    var r = finalize(T1[0], F.map(function (q) { return q[0]; }));
+    return mk('טענות נכונות על אחוזים', 'איזו מהטענות הבאות <b>נכונה</b>?', r, 'הטענה הנכונה: ' + T1[0] + ' בשינויים רצופים מכפילים את המכפלות (למשל ' + M('1.2 · 0.8 = 0.96') + '), ולכן אי אפשר פשוט לחבר אחוזים.', function (i) { return r.options[i] === T1[0]; });
+  };
+  T.diagram = function () {
+    var Nn = pick([200, 400, 500, 600, 800]), items = shuffle([['כדורגל', 35], ['כדורסל', 25], ['שחייה', 20], ['טניס', 15], ['ריצה', 40], ['התעמלות', 30], ['כדורעף', 10]]).slice(0, 4);
+    var it = pick(items), a = Nn * it[1] / 100;
+    if (!Number.isInteger(a)) return T.diagram();
+    var r = numOpts(a, [it[1], Nn - a, Nn * it[1] / 10, a + 10]);
+    return mk('קריאת אחוזים מדיאגרמה', 'נשאלו ' + Nn + ' תלמידים אם הם עוסקים בכל אחד מענפי הספורט (כל תלמיד יכול לענות "כן" על כמה ענפים). הדיאגרמה מציגה את אחוז התלמידים שענו "כן". כמה תלמידים עוסקים ב' + it[0] + '?', r,
+      P(it[1]) + ' מ־' + Nn + ': ' + M(it[1] + '/100 · ' + Nn + ' = ' + N(a)) + ' תלמידים.', function (i) { return near(r.val(i), a); }, { fig: bars(items) });
+  };
+
+  /* ================= רמה 4 – תשובה פתוחה ================= */
+  var O = {};
+  O.part = function () { var p = pick([12, 35, 45, 65, 85, 120, 7]), X = pick([60, 80, 140, 220, 340, 500]), a = X * p / 100; if (!isNice(a)) return O.part();
+    return { type: 'פתוחה: חלק מהשלם', prompt: 'כמה הם ' + P(p) + ' מ־' + N(X) + '?', value: a, expl: M(p + '/100 · ' + X + ' = ' + N(a)) + '.' }; };
+  O.whole = function () { var p = pick([15, 35, 45, 12, 8, 64]), X = pick([100, 200, 300, 400, 500, 600, 800]), a = X * p / 100; if (!Number.isInteger(a)) return O.whole();
+    return { type: 'פתוחה: השלם מתוך חלק', prompt: N(a) + ' הם ' + P(p) + ' ממספר מסוים. מהו המספר?', value: X, expl: M('x = ' + a + ' · 100 : ' + p + ' = ' + X) + '.' }; };
+  O.original = function () { var up = Math.random() < 0.5, p = pick([15, 35, 12, 8, 60, 75]), X = pick([40, 80, 120, 200, 300, 400, 500]), Y = X * (up ? 1 + p / 100 : 1 - p / 100); if (!isNice(Y)) return O.original();
+    return { type: 'פתוחה: מחיר מקורי', prompt: 'אחרי ' + (up ? 'התייקרות' : 'הוזלה') + ' של ' + P(p) + ' המחיר הוא ' + S(Y) + '. מה היה המחיר המקורי (בש"ח)?', value: X,
+      expl: M('x = ' + N(Y) + ' : ' + N(up ? 1 + p / 100 : 1 - p / 100) + ' = ' + X) + '.' }; };
+  O.successive = function () { var X = pick([200, 400, 500, 800, 1000]), p = pick([10, 20, 25, 30, 50]), q = pick([10, 20, 25, 40]), Y = r2(X * (1 + p / 100) * (1 - q / 100)); if (!isNice(Y)) return O.successive();
+    return { type: 'פתוחה: שינויים רצופים', prompt: 'מחיר של ' + S(X) + ' עלה ב־' + P(p) + ', ואחר כך ירד ב־' + P(q) + '. מה המחיר הסופי (בש"ח)?', value: Y,
+      expl: M(N(1 + p / 100) + ' · ' + N(1 - q / 100) + ' · ' + X + ' = ' + N(Y)) + '.' }; };
+  O.change = function () { var A = pick([40, 80, 120, 160, 250, 400]), p = pick([15, 35, 45, 60, 125, 12]), up = Math.random() < 0.5, d = A * p / 100; if (!Number.isInteger(d) || (!up && p >= 100)) return O.change();
+    var B = up ? A + d : A - d;
+    return { type: 'פתוחה: אחוז השינוי', prompt: 'כמות ' + (up ? 'גדלה' : 'קטנה') + ' מ־' + N(A) + ' ל־' + N(B) + '. בכמה אחוזים ' + (up ? 'גדלה' : 'קטנה') + '? (כתבו מספר בלבד)', value: p,
+      expl: M(d + '/' + A + ' = ' + p + '/100') + ', כלומר ' + P(p) + '.' }; };
+  O.remainder = function () { var Nn = pick([300, 400, 600, 800, 1000]), a = pick([20, 25, 40, 60]), b = pick([15, 25, 35, 45]), rest = Nn * (100 - a) / 100, ans = rest * b / 100; if (!Number.isInteger(ans)) return O.remainder();
+    return { type: 'פתוחה: אחוזים מהנותרים', prompt: 'בהופעה היו ' + Nn + ' מקומות. ' + P(a) + ' מהמקומות נמכרו מראש, ו־' + P(b) + ' מהמקומות שנשארו נמכרו ביום ההופעה. כמה מקומות נמכרו ביום ההופעה?', value: ans,
+      expl: 'נשארו ' + N(rest) + ' מקומות, ו־' + P(b) + ' מהם הם ' + N(ans) + '.' }; };
+
+  /* ================= חוקר ================= */
+  function explorer() {
+    var list = [
+      { prompt: 'מחיר של חולצה הוא 100 ש"ח. המחיר עלה ב־20%. מה המחיר עכשיו?', c: '120 ש"ח', w: ['102 ש"ח', '80 ש"ח', '200 ש"ח'], hint: '20% מ־100 הם 20.', expl: '100 + 20 = 120.' },
+      { prompt: 'אחר כך המחיר של החולצה ירד ב־20%. מה המחיר עכשיו?', c: '96 ש"ח', w: ['100 ש"ח', '80 ש"ח', '98 ש"ח'], hint: 'מחשבים 20% מהמחיר <b>הנוכחי</b>, 120.', expl: '20% מ־120 הם 24, ו־120 − 24 = 96.' },
+      { prompt: 'למה המחיר לא חזר ל־100 ש"ח?', c: 'כי ה־20% השני חושב מ־120, ולכן הוא גדול מה־20% הראשון', w: ['כי טעינו בחישוב', 'כי הנחות תמיד גדולות מהתייקרויות', 'כי 20% ועוד 20% הם 40%'], hint: 'כמה שקלים עלה המחיר בפעם הראשונה, וכמה שקלים ירד בפעם השנייה?', expl: 'עלה ב־20 ש"ח וירד ב־24 ש"ח. האחוזים זהים, אבל השלם שונה.' },
+      { prompt: 'אותו חישוב בכפל: עלייה ב־20% = כפל ב־1.2, ירידה ב־20% = כפל ב־0.8. כמה זה ' + M('1.2 · 0.8') + '?', c: M('0.96'), w: [M('1'), M('0.4'), M('1.6')], hint: '12 · 8 = 96.', expl: M('1.2 · 0.8 = 0.96') + ' – כלומר בסך הכול המחיר ירד ב־4%.' },
+      { prompt: 'מספר גדל ב־25% והגיע ל־125. בכמה אחוזים צריך להקטין את 125 כדי לחזור ל־100?', c: '20%', w: ['25%', '125%', '75%'], hint: 'צריך להוריד 25. כמה אחוזים הם 25 מתוך 125?', expl: M('25/125 = 20/100') + ' – מקטינים ב־20%, לא ב־25%.' },
+      { prompt: 'מחיר גדל ב־50% ואחר כך קטן ב־50%. מה קרה בסך הכול?', c: 'המחיר קטן ב־25%', w: ['המחיר חזר לערכו המקורי', 'המחיר גדל ב־25%', 'המחיר קטן ב־50%'], hint: 'חשבו ' + M('1.5 · 0.5') + '.', expl: M('1.5 · 0.5 = 0.75') + ' – נשארו 75% מהמחיר, כלומר הוא קטן ב־25%.' }
+    ];
+    return list.map(function (q) { var r = finalize(q.c, q.w); return { type: 'חוקר', prompt: q.prompt, fig: '', options: r.options, answer: r.answer, hint: q.hint, expl: q.expl, check: function (i) { return r.options[i] === q.c; } }; });
+  }
+
+  var PLAN = {
+    1: ['pctToFrac', 'pctDec', 'fracToPct', 'grid', 'grid', 'easyPart', 'easyPart', 'whatPct', 'whatPct', 'concept'],
+    2: ['part', 'part', 'whole', 'whole', 'newVal', 'newVal', 'mult', 'change', 'change', 'over100'],
+    3: ['successive', 'successivePct', 'original', 'original', 'profit', 'remainder', 'asym', 'truth', 'diagram', 'mult']
+  };
+  function level(n) { return shuffle(PLAN[n]).map(function (k) { var q = T[k](); q.key = k; return q; }); }
+  function open() { var k = pick(Object.keys(O)); var q = O[k](); q.key = k; q.open = true; return q; }
+  function parseAnswer(s) { s = String(s).replace(/−/g, '-').replace(/,/g, '.').replace(/[\s%]/g, '').replace(/ש"ח|ש״ח/g, ''); if (!/^-?\d*\.?\d+$/.test(s)) return NaN; return Number(s); }
+  return { level: level, open: open, explorer: explorer, T: T, O: O, PLAN: PLAN, parseAnswer: parseAnswer, near: near, fmt: fmt };
+})();
+if (typeof module !== 'undefined') module.exports = GEN;
+
+</script>
+<script>
+{
+var APP = document.getElementById('app');
+var LS = CONF.ls;
+var S = null;          // מצב התלמיד
+var Q = null;          // סבב נוכחי
+var LET = ['א', 'ב', 'ג', 'ד'];
+var LNAME = { 1: 'רמה 1 – בסיס', 2: 'רמה 2 – ביניים', 3: 'רמה 3 – אתגר', 4: 'רמה 4 – אלופים וחוקרים' };
+var LDESC = CONF.ldesc;
+var PASS = 8, NQ = 10, STREAK_GOAL = 5;
+var EXEC = 'https://script.google.com/macros/s/AKfycbyU9Sx2yJE7wYBl_V9_AiXSOGoMiuYNnZP3CWH_w397MEN6MAbNGC8YLLj7mJ22YgNTdQ/exec' || '';
+var GS = !!(window.google && google.script && google.script.run);
+var LIVE = GS || !!EXEC;
+function api(fn, args, ok, fail) {
+  if (GS) { var r = google.script.run.withSuccessHandler(ok).withFailureHandler(fail); r[fn].apply(r, args); return; }
+  if (!EXEC) { fail(); return; }
+  fetch(EXEC, { method: 'POST', credentials: 'omit', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn: fn, args: args }) })
+    .then(function (x) { return x.text(); })
+    .then(function (t) { var j = JSON.parse(t); if (j.ok) ok(j.r); else fail(j.err); })
+    .catch(fail);
+}
+document.addEventListener('click', function (e) { var b = e.target.closest('[data-j]'); if (!b) return; S.level = +b.dataset.j; if (S.level === 4) { S.stage = 'A'; S.streak = 0; } save(); route(); });
+
+function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function save() { try { localStorage.setItem(LS, JSON.stringify(S)); } catch (e) {} }
+function loadLocal() { try { return JSON.parse(localStorage.getItem(LS) || 'null'); } catch (e) { return null; } }
+function normName(n) { return String(n || '').replace(/\s+/g, ' ').trim(); }
+function blank(name) { return { name: name, level: 1, att: { 1: 0, 2: 0, 3: 0 }, last: '', stage: 'A', streak: 0, best: 0, open: 0 }; }
+
+/* ---------- שליחה לגיליון של המורה ---------- */
+var outbox = [], sending = false;
+function send(p) { p.app = CONF.app; p.name = S.name; p.state = S; outbox.push(JSON.stringify(p)); flush(); }
+function flush() {
+  if (sending || !outbox.length) return;
+  if (!LIVE) { outbox = []; return; }
+  sending = true; var item = outbox[0];
+  api('report', [item], function () { outbox.shift(); sending = false; flush(); }, function () { sending = false; setTimeout(flush, 4000); });
+}
+
+/* ---------- מסכים ---------- */
+function header(extra) {
+  var h = '<div class="top"><div class="lv">';
+  for (var l = 1; l <= 4; l++) h += '<span class="chip ' + (l < S.level ? 'done' : l === S.level ? 'now' : '') + '">' + (l === 4 ? '★' : l) + '</span>';
+  h += '<span class="who">' + esc(S.name) + (S.cls ? ' · ' + esc(S.cls) : '') + '</span></div>' + (extra || '') + '</div>';
+  if (!LIVE) h = '<div class="demo">מצב ניסיון למורה – שום דבר לא נשלח. קפיצה לרמה: ' + [1, 2, 3, 4].map(function (l) { return '<button data-j="' + l + '">' + (l === 4 ? '★' : l) + '</button>'; }).join('') + '</div>' + h;
+  return h;
+}
+function startScreen() {
+  var prev = loadLocal();
+  var h = '<div class="card" style="margin-top:18px"><h1>' + CONF.title + '</h1><p class="muted">' + CONF.sub + '</p>';
+  h += '<p>3 רמות ועוד רמת אלופים. בכל רמה 10 שאלות – כדי לעבור צריך <b>8 נכונות</b>. לא עברתם? מקבלים שאלות חדשות באותה רמה ומנסים שוב.</p>';
+  if (prev && prev.name && prev.school) h += '<button class="btn gr" id="cont">להמשיך בתור ' + esc(prev.name) + ' (' + esc(prev.cls) + ')</button><p class="muted" style="text-align:center;margin:10px 0 0">או מלאו פרטים אחרים:</p>';
+  var cls = ['ז', 'ח', 'ט'].map(function (g) { return [1, 2, 3, 4, 5, 6, 7, 8].map(function (k) { return '<option>' + g + k + '</option>'; }).join(''); }).join('');
+  h += '<label for="nm" class="muted">שם פרטי ושם משפחה</label><input id="nm" class="name" autocomplete="off" maxlength="40">';
+  h += '<div class="two"><div><label for="sc" class="muted">בית ספר</label><select id="sc" class="name"><option value="">בחרו…</option><option>בגין</option><option>יד גיורא</option></select></div>';
+  h += '<div><label for="cl" class="muted">כיתה</label><select id="cl" class="name"><option value="">בחרו…</option>' + cls + '</select></div></div>';
+  h += '<div id="ne" class="err"></div><button class="btn" id="go">מתחילים</button></div>';
+  APP.innerHTML = h;
+  if (prev && prev.name && prev.school) document.getElementById('cont').onclick = function () { S = prev; route(); };
+  document.getElementById('go').onclick = function () {
+    var n = normName(document.getElementById('nm').value);
+    var sc = document.getElementById('sc').value, cl = document.getElementById('cl').value, ne = document.getElementById('ne');
+    if (n.split(' ').length < 2) { ne.textContent = 'כתבו שם פרטי ושם משפחה, כדי שהמורה ידע מי אתם.'; return; }
+    if (!sc || !cl) { ne.textContent = 'בחרו בית ספר וכיתה.'; return; }
+    begin(n, sc, cl);
+  };
+}
+function begin(n, sc, cl) {
+  APP.innerHTML = '<div class="card" style="margin-top:18px"><p>טוען…</p></div>';
+  var done = false;
+  function go(st) { if (done) return; done = true; S = st && st.name ? st : blank(n); S.name = n; S.school = sc; S.cls = cl; save(); route(); }
+  if (LIVE) {
+    api('load', [n, CONF.app, sc, cl], function (r) { go(r ? JSON.parse(r) : null); }, function () { go(null); });
+    setTimeout(function () { go(null); }, 8000);
+  } else go(null);
+}
+function route() {
+  if (S.level <= 3) levelIntro(); else lvl4Intro();
+}
+function levelIntro() {
+  var a = S.att[S.level];
+  var h = header() + '<div class="card"><h2>' + LNAME[S.level] + '</h2><p>' + LDESC[S.level] + '</p><p class="muted">' + (a ? 'זה יהיה הניסיון ה־' + (a + 1) + ' ברמה הזו – עם שאלות חדשות.' : '10 שאלות · צריך 8 נכונות כדי לעבור.') + '</p><button class="btn" id="go">' + (a ? 'מנסים שוב' : 'מתחילים') + '</button></div>';
+  APP.innerHTML = h;
+  document.getElementById('go').onclick = function () { S.att[S.level]++; save(); Q = { list: GEN.level(S.level), i: 0, ok: 0, wrong: [] }; showQ(); };
+}
+function optsHtml(q) {
+  var cls = q.optKind === 'svg' ? 'opts svg' : q.optKind === 'tbl' ? 'opts tbl' : 'opts';
+  return '<div class="' + cls + '">' + q.options.map(function (o, i) { return '<button class="opt" data-i="' + i + '"><span class="let">' + LET[i] + '</span><span>' + o + '</span></button>'; }).join('') + '</div>';
+}
+function showQ() {
+  var q = Q.list[Q.i];
+  var bar = '<div class="bar"><i style="width:' + (Q.i / NQ * 100) + '%"></i></div><div class="meta"><span>' + LNAME[S.level] + ' · שאלה ' + (Q.i + 1) + ' מתוך ' + NQ + '</span><span>✓ ' + Q.ok + '</span></div>';
+  APP.innerHTML = header(bar) + '<div class="card"><p class="q">' + q.prompt + '</p>' + (q.fig ? '<div class="fig">' + q.fig + '</div>' : '') + optsHtml(q) + '<div id="fb"></div></div>';
+  window.scrollTo(0, 0);
+  APP.querySelectorAll('.opt').forEach(function (b) { b.onclick = function () { answer(+b.dataset.i); }; });
+}
+function answer(i) {
+  var q = Q.list[Q.i], ok = i === q.answer;
+  var btns = APP.querySelectorAll('.opt');
+  btns.forEach(function (b) { b.disabled = true; });
+  btns[q.answer].classList.add('ok'); if (!ok) btns[i].classList.add('no');
+  if (ok) Q.ok++; else Q.wrong.push(q.type);
+  send({ kind: 'answer', level: S.level, attempt: S.att[S.level], type: q.type, correct: ok ? 1 : 0 });
+  var last = Q.i === NQ - 1;
+  document.getElementById('fb').innerHTML = '<div class="fb ' + (ok ? 'ok' : 'no') + '"><b class="t">' + (ok ? 'נכון!' : 'לא בדיוק. התשובה הנכונה: ' + LET[q.answer]) + '</b>' + q.expl + '</div><button class="btn" id="nx">' + (last ? 'לסיכום הרמה' : 'לשאלה הבאה') + '</button>';
+  document.getElementById('nx').onclick = function () { if (last) endLevel(); else { Q.i++; showQ(); } };
+  document.getElementById('fb').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+function endLevel() {
+  var passed = Q.ok >= PASS, L = S.level;
+  S.last = 'רמה ' + L + ': ' + Q.ok + '/10';
+  send({ kind: 'attempt', level: L, attempt: S.att[L], score: Q.ok, passed: passed ? 1 : 0 });
+  if (passed) S.level++;
+  save(); send({ kind: 'state' });
+  var tally = {}; Q.wrong.forEach(function (t) { tally[t] = (tally[t] || 0) + 1; });
+  var wl = Object.keys(tally).map(function (t) { return '<li>' + esc(t) + (tally[t] > 1 ? ' (' + tally[t] + ')' : '') + '</li>'; }).join('');
+  var h = header() + '<div class="card" style="text-align:center"><p class="muted">' + LNAME[L] + '</p><div class="big">' + Q.ok + '/10</div>';
+  if (passed) h += '<h2>' + (L === 3 ? 'עברתם את כל שלוש הרמות!' : 'כל הכבוד – עברתם לרמה ' + (L + 1) + '!') + '</h2>';
+  else h += '<h2>עוד קצת – צריך 8 נכונות</h2><p>נתרגל שוב את אותה רמה עם שאלות חדשות.</p>';
+  if (wl) h += '<div style="text-align:start"><p class="muted" style="margin-bottom:0">כדאי לחזור על:</p><ul class="ul">' + wl + '</ul></div>';
+  h += '<button class="btn ' + (passed ? 'gr' : '') + '" id="go">' + (passed ? (L === 3 ? 'לרמת האלופים ★' : 'לרמה ' + (L + 1)) : 'לנסות שוב') + '</button></div>';
+  APP.innerHTML = h; window.scrollTo(0, 0);
+  document.getElementById('go').onclick = route;
+}
+
+/* ---------- רמה 4 ---------- */
+function lvl4Intro() {
+  var t, d;
+  if (S.stage === 'A') { t = 'שלב א – אתגר בתשובה פתוחה'; d = 'כאן אין אפשרויות לבחירה: כותבים את התשובה בעצמכם. ענו נכון על <b>' + STREAK_GOAL + ' שאלות ברצף</b> כדי לפתוח את שלב החוקר. טעות מאפסת את הרצף.'; }
+  else if (S.stage === 'B') { t = 'שלב ב – החוקר'; d = CONF.expIntro; }
+  else { t = 'שלב ג – אתגר אינסופי'; d = 'שאלות פתוחות בלי סוף. כמה תשובות נכונות ברצף תצליחו? השיא שלכם: <b>' + S.best + '</b>.'; }
+  APP.innerHTML = header() + '<div class="card"><h2>' + LNAME[4] + '</h2><h2 style="font-size:19px">' + t + '</h2><p>' + d + '</p><button class="btn gr" id="go">קדימה</button></div>';
+  document.getElementById('go').onclick = function () { if (S.stage === 'B') { Q = { list: GEN.explorer(), i: 0 }; showExp(); } else openQ(); };
+}
+function openQ() {
+  var q = GEN.open(); Q = { q: q };
+  var top = S.stage === 'A'
+    ? '<div class="meta"><span>שלב א · רצף ' + S.streak + ' מתוך ' + STREAK_GOAL + '</span><span>★</span></div><div class="streak">' + Array.from({ length: STREAK_GOAL }, function (_, k) { return '<span class="' + (k < S.streak ? 'on' : '') + '"></span>'; }).join('') + '</div>'
+    : '<div class="stat"><div>רצף נוכחי<b>' + S.streak + '</b></div><div>השיא שלי<b>' + S.best + '</b></div></div>';
+  APP.innerHTML = header(top) + '<div class="card"><p class="q">' + q.prompt + '</p>' + (q.fig ? '<div class="fig">' + q.fig + '</div>' : '') + '<label class="muted" for="an">התשובה שלי:</label><input id="an" class="ans" inputmode="decimal" autocomplete="off" enterkeyhint="done"><div id="ae" class="err"></div><button class="btn" id="ck">בדיקה</button><div id="fb"></div></div>';
+  window.scrollTo(0, 0);
+  var inp = document.getElementById('an'), ck = document.getElementById('ck');
+  function check() {
+    var v = GEN.parseAnswer(inp.value);
+    if (isNaN(v)) { document.getElementById('ae').textContent = 'כתבו מספר (אפשר עם מינוס או נקודה עשרונית).'; inp.classList.add('shake'); setTimeout(function () { inp.classList.remove('shake'); }, 400); return; }
+    var ok = GEN.near(v, q.value);
+    inp.disabled = true; ck.style.display = 'none'; document.getElementById('ae').textContent = '';
+    if (ok) { S.streak++; if (S.stage === 'C' && S.streak > S.best) S.best = S.streak; } else S.streak = 0;
+    if (S.stage === 'A' && S.streak > S.best) S.best = S.streak;
+    S.open++;
+    send({ kind: 'answer', level: 4, attempt: S.stage === 'A' ? 'שלב א' : 'שלב ג', type: q.type, correct: ok ? 1 : 0 });
+    var unlock = S.stage === 'A' && S.streak >= STREAK_GOAL;
+    if (unlock) { S.stage = 'B'; S.streak = 0; }
+    save(); send({ kind: 'state' });
+    document.getElementById('fb').innerHTML = '<div class="fb ' + (ok ? 'ok' : 'no') + '"><b class="t">' + (ok ? 'נכון!' : 'לא בדיוק. התשובה: <span class="m" dir="ltr">' + GEN.fmt(q.value) + '</span>') + '</b>' + q.expl + '</div><button class="btn ' + (unlock ? 'gr' : '') + '" id="nx">' + (unlock ? 'פתחתם את שלב החוקר!' : 'לשאלה הבאה') + '</button>';
+    document.getElementById('nx').onclick = function () { if (unlock) lvl4Intro(); else openQ(); };
+  }
+  ck.onclick = check;
+  inp.onkeydown = function (e) { if (e.key === 'Enter') check(); };
+}
+function showExp() {
+  var q = Q.list[Q.i];
+  var bar = '<div class="bar"><i style="width:' + (Q.i / Q.list.length * 100) + '%"></i></div><div class="meta"><span>שלב החוקר · ' + (Q.i + 1) + ' מתוך ' + Q.list.length + '</span><span></span></div>';
+  APP.innerHTML = header(bar) + '<div class="card"><p class="q">' + q.prompt + '</p>' + (q.fig ? '<div class="fig">' + q.fig + '</div>' : '') + optsHtml(q) + '<div id="fb"></div></div>';
+  window.scrollTo(0, 0);
+  var first = true;
+  APP.querySelectorAll('.opt').forEach(function (b) {
+    b.onclick = function () {
+      var i = +b.dataset.i, ok = i === q.answer;
+      if (first) send({ kind: 'answer', level: 4, attempt: 'חוקר', type: 'חוקר ' + (Q.i + 1), correct: ok ? 1 : 0 });
+      first = false;
+      if (!ok) { b.classList.add('no'); b.disabled = true; document.getElementById('fb').innerHTML = '<div class="hint"><b>רמז:</b> ' + q.hint + '</div>'; return; }
+      APP.querySelectorAll('.opt').forEach(function (x) { x.disabled = true; }); b.classList.add('ok');
+      var last = Q.i === Q.list.length - 1;
+      document.getElementById('fb').innerHTML = '<div class="fb ok"><b class="t">נכון!</b>' + q.expl + '</div><button class="btn ' + (last ? 'gr' : '') + '" id="nx">' + (last ? 'סיימתי את החוקר' : 'הלאה') + '</button>';
+      document.getElementById('nx').onclick = function () {
+        if (!last) { Q.i++; showExp(); return; }
+        S.stage = 'C'; S.streak = 0; save(); send({ kind: 'state' });
+        APP.innerHTML = header() + '<div class="card"><h2>גיליתם!</h2><p>' + CONF.expDone + '</p><button class="btn gr" id="go">לאתגר האינסופי</button></div>';
+        document.getElementById('go').onclick = lvl4Intro;
+      };
+    };
+  });
+}
+
+startScreen();
+}
+</script>
+</body>
+</html>

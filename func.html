@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מסע הפונקציות – ח1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: מחברת חשבון של תלמיד – ברור, חם, לא ילדותי
+   IDEA: דף משבצות; כל רמה היא עמוד במחברת
+   PICTURE: הגרף/הטבלה של השאלה הוא המרכז של המסך
+   COLOUR and TYPE: לבן משבצות, דיו כהה, ירוק גרף, כתום לסימון; Rubik
+   LAYOUT: טור אחד לטלפון, כפתורים גדולים, פס התקדמות למעלה */
+:root{--bg:#fbfaf6;--ink:#1d2433;--soft:#5b6475;--line:#e6e2d6;--green:#1f8a70;--greenbg:#e3f4ee;--orange:#e4572e;--orangebg:#fde9e2;--card:#fff}
+*{box-sizing:border-box;min-width:0}
+html,body{margin:0}
+body{background:var(--bg);background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:22px 22px;color:var(--ink);font:17px/1.55 Rubik,Arial,sans-serif;min-height:100vh;overflow-x:clip}
+.wrap{max-width:560px;margin:0 auto;padding:14px 14px 40px}
+.top{position:sticky;top:0;z-index:5;background:rgba(251,250,246,.96);backdrop-filter:blur(4px);margin:0 -14px 10px;padding:10px 14px;border-bottom:1px solid var(--line)}
+.lv{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.chip{min-width:34px;height:34px;border-radius:17px;display:grid;place-items:center;font-weight:700;font-size:15px;border:2px solid var(--line);background:#fff;color:var(--soft)}
+.chip.done{background:var(--green);border-color:var(--green);color:#fff}
+.chip.now{border-color:var(--ink);color:var(--ink)}
+.who{margin-inline-start:auto;font-size:14px;color:var(--soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:45%}
+.bar{height:8px;background:#ece8dc;border-radius:4px;margin-top:9px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green);border-radius:4px;transition:width .3s}
+.meta{display:flex;justify-content:space-between;font-size:14px;color:var(--soft);margin-top:5px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 16px;box-shadow:0 2px 0 rgba(29,36,51,.05)}
+h1{font-size:30px;line-height:1.1;margin:8px 0 6px;text-wrap:balance}
+h2{font-size:23px;line-height:1.2;margin:0 0 8px}
+.q{font-size:19px;font-weight:500;margin:0 0 12px}
+.m{font-family:"Times New Roman",Times,serif;font-style:italic;font-size:1.08em;white-space:nowrap;unicode-bidi:isolate}
+.fig{margin:6px 0 14px;display:flex;justify-content:center}
+svg.g{width:100%;max-width:330px;height:auto;border-radius:8px}
+svg.g.sm{max-width:none}
+svg.qfig{width:100%;max-width:330px;height:auto;border-radius:8px;border:1px solid var(--line)}
+.gl{stroke:#dfe3ea;stroke-width:1}.ax{stroke:#1d2433;stroke-width:1.6}.ln{stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.g text{direction:ltr;unicode-bidi:bidi-override}.tk{fill:#5b6475;font-family:Rubik,Arial,sans-serif}.al{fill:#1d2433;font-style:italic;font-family:"Times New Roman",serif}
+table.vt{border-collapse:collapse;margin:0 auto;font-size:17px;background:#fff}
+table.vt th,table.vt td{border:1.5px solid #9aa3b2;padding:6px 10px;text-align:center;font-family:"Times New Roman",serif}
+table.vt th{background:#eef1f5;font-style:italic}
+.opts{display:grid;gap:10px}
+.opts.svg,.opts.tbl{grid-template-columns:1fr 1fr}
+.opt{display:flex;gap:10px;align-items:center;width:100%;min-height:54px;padding:10px 12px;border:2px solid var(--line);border-radius:14px;background:#fff;font:inherit;color:inherit;text-align:start;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.opts.svg .opt,.opts.tbl .opt{flex-direction:column;padding:8px}
+.opt .let{flex:none;width:28px;height:28px;border-radius:14px;background:#eef1f5;display:grid;place-items:center;font-weight:700;font-size:14px}
+.opts.tbl table.vt{font-size:14px}.opts.tbl table.vt td,.opts.tbl table.vt th{padding:3px 6px}
+.opt:focus-visible,.btn:focus-visible,input:focus-visible{outline:3px solid #2b6cb0;outline-offset:2px}
+.opt.ok{border-color:var(--green);background:var(--greenbg)}
+.opt.no{border-color:var(--orange);background:var(--orangebg)}
+.opt[disabled]{cursor:default}
+.fb{margin-top:14px;padding:14px;border-radius:14px;font-size:16px}
+.fb.ok{background:var(--greenbg);border:1px solid #b6e0d2}
+.fb.no{background:var(--orangebg);border:1px solid #f4c3b3}
+.fb b.t{display:block;font-size:18px;margin-bottom:4px}
+.hint{margin-top:12px;padding:12px;border-radius:12px;background:#fff7d6;border:1px solid #f0e1a0;font-size:16px}
+.btn{display:block;width:100%;min-height:52px;margin-top:14px;border:0;border-radius:14px;background:var(--ink);color:#fff;font:700 18px Rubik,Arial,sans-serif;cursor:pointer}
+.btn.sec{background:#fff;color:var(--ink);border:2px solid var(--ink)}
+.btn.gr{background:var(--green)}
+select.name{appearance:auto}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+input.name,select.name,input.ans{width:100%;min-height:52px;border:2px solid #c9cfda;border-radius:12px;padding:10px 14px;font:18px Rubik,Arial,sans-serif;background:#fff;color:var(--ink)}
+input.ans{direction:ltr;text-align:center;font-size:22px}
+.big{font-size:58px;font-weight:700;line-height:1;margin:8px 0}
+.muted{color:var(--soft);font-size:15px}
+.ul{margin:8px 0 0;padding-inline-start:20px}
+.streak{display:flex;gap:6px;margin:4px 0 12px}
+.streak span{flex:1;height:10px;border-radius:5px;background:#ece8dc}
+.streak span.on{background:var(--orange)}
+.stat{display:flex;gap:10px;margin:6px 0 12px}
+.stat div{flex:1;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.stat b{display:block;font-size:28px}
+.err{color:var(--orange);font-size:15px;margin-top:8px}
+.demo{background:#fff7d6;border:1px solid #f0e1a0;border-radius:10px;padding:6px 10px;font-size:14px;margin:0 0 8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}.demo button{min-width:36px;min-height:36px;border:1px solid #c9b860;border-radius:8px;background:#fff;font:700 15px Rubik,Arial,sans-serif;cursor:pointer}
+.pg{width:100%;max-width:300px;height:auto}
+.bars{width:100%;max-width:360px;display:grid;gap:8px}.br{display:grid;grid-template-columns:5.5em 1fr 3em;gap:8px;align-items:center;font-size:15px}.bb{height:18px;background:#ece8dc;border-radius:4px;overflow:hidden}.bb i{display:block;height:100%;background:#3b6fb6}.bv{direction:ltr;text-align:left;font-weight:700}
+.shake{animation:sh .35s}
+@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@media(prefers-reduced-motion:reduce){.shake{animation:none}.bar i{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+var CONF = {"app":"func","ls":"funcq_v1","title":"מסע הפונקציות","page":"מסע הפונקציות – ח1","sub":"ח׳1 · מבוא לפונקציות והפונקציה הקווית \u003cspan class=\"m\" dir=\"ltr\">y = mx\u003c/span>","ldesc":{"1":"רביעים ושיעורי נקודות, קריאת ערכים מגרף ומטבלה, הצבה, נקודה על גרף, עלייה וירידה, ומהי פונקציה.","2":"מעבר בין ייצוגים, שיפוע וקצב השתנות, תלילות, תחום וטווח, עלייה וירידה, חיוביות ושליליות.","3":"שאלות מילוליות (מחיר, מהירות), השוואת פונקציות, \"מה יקרה אם…\", יחס ישר ושאלות הבנה."},"expIntro":"סדרה של 6 שאלות שבהן תגלו בעצמכם משהו על קצב ההשתנות. אם טעיתם – תקבלו רמז ותנסו שוב. אין כאן ציון.","expDone":"קצב ההשתנות של פונקציה קווית הוא \u003cb>השיפוע\u003c/b>: בכמה משתנה y כש־x גדל ב־1. הוא זהה בכל מקום על הישר, ולכן הגרף הוא קו ישר."};
+/* מחוללי שאלות – פונקציות, ח1 (ארכימדס "כיוון" ח כרך א, עמ' 22–93) */
+var GEN = (function () {
+  function ri(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function shuffle(arr) { var a = arr.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function near(a, b) { return Math.abs(a - b) < 1e-9; }
+  function r2(n) { return Math.round(n * 1000) / 1000; }
+  function fmt(n) { n = r2(n); var s = String(Math.abs(n)); return (n < 0 ? '−' : '') + s; }
+  function M(s) { return '<span class="m" dir="ltr">' + s + '</span>'; }
+  function coefX(a) { if (near(a, 1)) return 'x'; if (near(a, -1)) return '−x'; return fmt(a) + 'x'; }
+  function rule(a) { return 'y = ' + coefX(a); }
+  function ruleAB(a, b) { var s = coefX(a); if (b > 0) s += ' + ' + fmt(b); else if (b < 0) s += ' − ' + fmt(-b); return 'y = ' + s; }
+  function pt(x, y) { return '(' + fmt(x) + ', ' + fmt(y) + ')'; }
+  function paren(n) { return n < 0 ? '(' + fmt(n) + ')' : fmt(n); }
+
+  /* ---------- בניית אפשרויות ---------- */
+  // items: [{html, ok:boolean}] – מחזיר 4 אפשרויות מעורבבות, אחת נכונה
+  function finalize(correctHtml, wrongHtmls) {
+    var seen = {}; seen[correctHtml] = 1; var w = [];
+    for (var i = 0; i < wrongHtmls.length && w.length < 3; i++) { var h = wrongHtmls[i]; if (h == null || seen[h]) continue; seen[h] = 1; w.push(h); }
+    if (w.length < 3) throw new Error('not enough distractors: ' + correctHtml);
+    var all = shuffle([{ h: correctHtml, ok: true }].concat(w.map(function (h) { return { h: h, ok: false }; })));
+    return { options: all.map(function (o) { return o.h; }), answer: all.findIndex(function (o) { return o.ok; }) };
+  }
+  // מספרים: מסיחים לפי ערך, עם השלמה אוטומטית
+  function numOpts(correct, cands, wrap) {
+    wrap = wrap || function (v) { return M(fmt(v)); };
+    var vals = [], seen = [correct];
+    var niceC = Number.isInteger(r2(correct * 2));
+    function add(v) { if (!isFinite(v)) return; v = r2(v); if (niceC && !Number.isInteger(r2(v * 2))) return; for (var k = 0; k < seen.length; k++) if (near(seen[k], v)) return; seen.push(v); vals.push(v); }
+    cands.forEach(add);
+    var fb = [correct + 1, correct - 1, correct * 2, -correct, correct + 2, correct - 2, correct + 3, correct + 5];
+    for (var i = 0; vals.length < 3 && i < fb.length; i++) add(fb[i]);
+    vals = vals.slice(0, 3);
+    var r = finalize(wrap(correct), vals.map(wrap));
+    r.values = r.options.map(function (h) { return h; });
+    return r;
+  }
+
+  /* ---------- גרפים ---------- */
+  function graph(o) {
+    var R = o.R || 6, S = o.small ? 150 : 300, pad = o.small ? 10 : 20;
+    var u = (S - 2 * pad) / (2 * R);
+    function X(x) { return r2(pad + (x + R) * u); }
+    function Y(y) { return r2(pad + (R - y) * u); }
+    var s = '<svg class="g' + (o.small ? ' sm' : '') + '" direction="ltr" viewBox="0 0 ' + S + ' ' + S + '" xmlns="http://www.w3.org/2000/svg" role="img">';
+    s += '<rect x="0" y="0" width="' + S + '" height="' + S + '" fill="#fff"/>';
+    for (var i = -R; i <= R; i++) {
+      s += '<line x1="' + X(i) + '" y1="' + Y(-R) + '" x2="' + X(i) + '" y2="' + Y(R) + '" class="gl"/>';
+      s += '<line x1="' + X(-R) + '" y1="' + Y(i) + '" x2="' + X(R) + '" y2="' + Y(i) + '" class="gl"/>';
+    }
+    s += '<line x1="' + X(-R) + '" y1="' + Y(0) + '" x2="' + X(R) + '" y2="' + Y(0) + '" class="ax"/>';
+    s += '<line x1="' + X(0) + '" y1="' + Y(-R) + '" x2="' + X(0) + '" y2="' + Y(R) + '" class="ax"/>';
+    var fs = o.small ? 8 : 10, step = o.small ? 2 : 1;
+    for (var k = -R; k <= R; k++) {
+      if (k === 0 || k % step) continue;
+      s += '<text x="' + X(k) + '" y="' + r2(Y(0) + fs + 2) + '" class="tk" font-size="' + fs + '" text-anchor="middle">' + fmt(k) + '</text>';
+      s += '<text x="' + r2(X(0) - 3) + '" y="' + r2(Y(k) + fs / 3) + '" class="tk" font-size="' + fs + '" text-anchor="end">' + fmt(k) + '</text>';
+    }
+    s += '<text x="' + r2(X(R) - 2) + '" y="' + r2(Y(0) - 4) + '" class="al" font-size="' + (fs + 2) + '" text-anchor="end">x</text>';
+    s += '<text x="' + r2(X(0) + 5) + '" y="' + r2(Y(R) + fs + 2) + '" class="al" font-size="' + (fs + 2) + '">y</text>';
+    (o.lines || []).forEach(function (L) {
+      var a = L.a, xe = Math.abs(a) > 1 ? R / Math.abs(a) : R;
+      s += '<line x1="' + X(-xe) + '" y1="' + Y(-a * xe) + '" x2="' + X(xe) + '" y2="' + Y(a * xe) + '" class="ln" stroke="' + (L.c || '#1f8a70') + '"/>';
+    });
+    if (o.poly) {
+      s += '<polyline fill="none" class="ln" stroke="#1f8a70" points="' + o.poly.map(function (p) { return X(p[0]) + ',' + Y(p[1]); }).join(' ') + '"/>';
+      o.poly.forEach(function (p) { s += '<circle cx="' + X(p[0]) + '" cy="' + Y(p[1]) + '" r="3" fill="#1f8a70"/>'; });
+    }
+    if (o.curve) s += '<polyline fill="none" class="ln" stroke="#1f8a70" points="' + o.curve.map(function (p) { return X(p[0]) + ',' + Y(p[1]); }).join(' ') + '"/>';
+    if (o.circle) s += '<ellipse cx="' + X(o.circle[0]) + '" cy="' + Y(o.circle[1]) + '" rx="' + r2(o.circle[2] * u) + '" ry="' + r2(o.circle[3] * u) + '" fill="none" class="ln" stroke="#1f8a70"/>';
+    (o.pts || []).forEach(function (p) { s += '<circle cx="' + X(p[0]) + '" cy="' + Y(p[1]) + '" r="4.5" fill="#e4572e"/>'; });
+    return s + '</svg>';
+  }
+  function sample(f, a, b, n) { var p = []; for (var i = 0; i <= n; i++) { var x = a + (b - a) * i / n; p.push([r2(x), r2(f(x))]); } return p; }
+
+  function table(xs, ys) {
+    var h = '<table class="vt" dir="ltr"><tr><th>x</th>' + xs.map(function (x) { return '<td>' + fmt(x) + '</td>'; }).join('') + '</tr>';
+    h += '<tr><th>y</th>' + ys.map(function (y) { return '<td>' + (y === null ? '?' : fmt(y)) + '</td>'; }).join('') + '</tr></table>';
+    return h;
+  }
+
+  var SL1 = [1, 2, 3, -1, -2, -3, 0.5, -0.5];
+  function xFor(a, lim) { // x שלם כך ש-y=ax שלם ובתוך הגבולות, x≠0
+    var c = []; for (var x = -lim; x <= lim; x++) { var y = a * x; if (x !== 0 && Number.isInteger(r2(y)) && Math.abs(y) <= lim) c.push(x); }
+    return pick(c);
+  }
+
+  /* ================= רמה 1 ================= */
+  var T = {};
+  T.readGraph = function () {
+    var a = pick([1, 2, -1, -2, 3]), x = pick([1, 2, 3, -1, -2].filter(function (v) { return Math.abs(a * v) <= 6; })), y = a * x;
+    var r = numOpts(y, [x, -y, y + a, y - a, a]);
+    return { type: 'קריאת ערך מגרף', prompt: 'לפניכם גרף של פונקציה. מהו ערך ה־y כאשר ' + M('x = ' + fmt(x)) + '?', fig: graph({ lines: [{ a: a }] }),
+      options: r.options, answer: r.answer, expl: 'מעל (או מתחת) ' + M('x = ' + fmt(x)) + ' נמצאת על הגרף הנקודה ' + M(pt(x, y)) + '. לכן ' + M('y = ' + fmt(y)) + '.',
+      check: function (i) { return r.options[i] === M(fmt(y)); } };
+  };
+  T.readTable = function () {
+    var a = pick([2, 3, 4, 5, -2, -3]), xs = [0, 1, 2, 3, 4, 5], ys = xs.map(function (x) { return a * x; }), idx = ri(1, 5);
+    var x0 = xs[idx], y0 = ys[idx];
+    if (Math.random() < 0.5) {
+      var r = numOpts(y0, [ys[idx === 5 ? 4 : idx + 1], x0, -y0, ys[idx - 1]]);
+      return { type: 'קריאה מטבלת ערכים', prompt: 'לפניכם טבלת ערכים של פונקציה. מהו ערך ה־y כאשר ' + M('x = ' + fmt(x0)) + '?', fig: table(xs, ys),
+        options: r.options, answer: r.answer, expl: 'בטבלה, מתחת ל־' + M('x = ' + fmt(x0)) + ' רשום ' + M('y = ' + fmt(y0)) + '.',
+        check: function (i) { return r.options[i] === M(fmt(y0)); } };
+    }
+    var r2o = numOpts(x0, [y0].concat(shuffle(xs.filter(function (x, k) { return k !== idx && x !== 0; }))));
+    return { type: 'קריאה מטבלת ערכים', prompt: 'לפניכם טבלת ערכים של פונקציה. עבור איזה ערך של x מתקבל ' + M('y = ' + fmt(y0)) + '?', fig: table(xs, ys),
+      options: r2o.options, answer: r2o.answer, expl: 'מחפשים בשורת ה־y את הערך ' + M(fmt(y0)) + '. מעליו רשום ' + M('x = ' + fmt(x0)) + '.',
+      check: function (i) { var v = parseNum(r2o.options[i]); var k = xs.indexOf(v); return k >= 0 && near(ys[k], y0); } };
+  };
+  T.subst = function () {
+    var a = pick([2, 3, 4, 5, -2, -3]), x = pick([1, 2, 3, 4, 5, -1, -2]), f = a * x;
+    var r = numOpts(f, [a + x, -f, x - a, f + a]);
+    return { type: 'הצבה בייצוג אלגברי', prompt: 'נתונה הפונקציה ' + M(rule(a)) + '. מהו ערך הפונקציה עבור ' + M('x = ' + fmt(x)) + '?', fig: '',
+      options: r.options, answer: r.answer, expl: 'מציבים ' + M('x = ' + fmt(x)) + ': ' + M('y = ' + fmt(a) + ' · ' + paren(x) + ' = ' + fmt(f)) + '.',
+      check: function (i) { return near(parseNum(r.options[i]), f); } };
+  };
+  var QN = ['1', '2', '3', '4'];
+  function quadOf(x, y) { return x > 0 && y > 0 ? 0 : x < 0 && y > 0 ? 1 : x < 0 && y < 0 ? 2 : x > 0 && y < 0 ? 3 : -1; }
+  var QRULE = 'רביע 1: x חיובי, y חיובי. רביע 2: x שלילי, y חיובי. רביע 3: x שלילי, y שלילי. רביע 4: x חיובי, y שלילי.';
+  function quadFig() {
+    var W = 300, H = 210, cx = 150, cy = 105, f = 'font-family="Rubik,Arial,sans-serif"';
+    var t = '<svg class="qfig" viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg" role="img">';
+    t += '<rect x="' + cx + '" y="0" width="' + (W - cx) + '" height="' + cy + '" fill="#e3f4ee"/><rect x="0" y="0" width="' + cx + '" height="' + cy + '" fill="#fdf3d8"/>';
+    t += '<rect x="0" y="' + cy + '" width="' + cx + '" height="' + (H - cy) + '" fill="#e8eef8"/><rect x="' + cx + '" y="' + cy + '" width="' + (W - cx) + '" height="' + (H - cy) + '" fill="#fde9e2"/>';
+    t += '<line x1="6" y1="' + cy + '" x2="' + (W - 6) + '" y2="' + cy + '" stroke="#1d2433" stroke-width="2"/><line x1="' + cx + '" y1="6" x2="' + cx + '" y2="' + (H - 6) + '" stroke="#1d2433" stroke-width="2"/>';
+    t += '<path d="M' + (W - 6) + ' ' + cy + ' l-9 -5 v10z M' + cx + ' 6 l-5 9 h10z" fill="#1d2433"/>';
+    t += '<text x="' + (W - 12) + '" y="' + (cy + 18) + '" font-size="15" font-style="italic" font-family="Times New Roman,serif">x</text><text x="' + (cx + 12) + '" y="22" font-size="15" font-style="italic" font-family="Times New Roman,serif">y</text>';
+    [['רביע 1', cx + 75, cy - 48], ['רביע 2', cx - 75, cy - 48], ['רביע 3', cx - 75, cy + 58], ['רביע 4', cx + 75, cy + 58]].forEach(function (q) {
+      t += '<text x="' + q[1] + '" y="' + q[2] + '" font-size="16" font-weight="700" text-anchor="middle" fill="#1d2433" ' + f + '>' + q[0] + '</text>';
+    });
+    return t + '</svg>';
+  }
+  T.quadrant = function () {
+    var v = ri(0, 3), X = ri(1, 7), Y = ri(1, 7);
+    if (X === Y) Y = X === 7 ? 6 : X + 1;
+    if (v === 0) {
+      var sx = pick([1, -1]), sy = pick([1, -1]), x = sx * X, y = sy * Y, q = quadOf(x, y);
+      var opts = QN.map(function (n) { return 'ברביע ' + n; });
+      var r = finalize(opts[q], opts.filter(function (o, k) { return k !== q; }));
+      return { type: 'רביעים במערכת הצירים', prompt: 'באיזה רביע נמצאת הנקודה ' + M(pt(x, y)) + '?', fig: quadFig(), options: r.options, answer: r.answer,
+        expl: 'שיעור ה־x ' + (x > 0 ? 'חיובי' : 'שלילי') + ' ושיעור ה־y ' + (y > 0 ? 'חיובי' : 'שלילי') + ', לכן הנקודה ברביע ' + QN[q] + '. ' + QRULE,
+        check: function (i) { return r.options[i] === 'ברביע ' + QN[q]; } };
+    }
+    if (v === 1) {
+      var q2 = ri(0, 3), all = [[X, Y], [-X, Y], [-X, -Y], [X, -Y]];
+      var r2_ = finalize(M(pt(all[q2][0], all[q2][1])), all.filter(function (c, k) { return k !== q2; }).map(function (c) { return M(pt(c[0], c[1])); }));
+      return { type: 'רביעים במערכת הצירים', prompt: 'איזו מהנקודות הבאות נמצאת ברביע <b>' + QN[q2] + '</b>?', fig: quadFig(), options: r2_.options, answer: r2_.answer,
+        expl: QRULE + ' לכן התשובה ' + M(pt(all[q2][0], all[q2][1])) + '.',
+        check: function (i) { var m = stripM(r2_.options[i]).match(/\(([^,]+), ([^)]+)\)/); return quadOf(parseNum(m[1]), parseNum(m[2])) === q2; } };
+    }
+    if (v === 2) {
+      var q3 = ri(0, 3), sg = [['חיובי', 'חיובי'], ['שלילי', 'חיובי'], ['שלילי', 'שלילי'], ['חיובי', 'שלילי']][q3];
+      var o3 = QN.map(function (n) { return 'ברביע ' + n; });
+      var r3 = finalize(o3[q3], o3.filter(function (o, k) { return k !== q3; }));
+      return { type: 'רביעים במערכת הצירים', prompt: 'לנקודה יש שיעור x <b>' + sg[0] + '</b> ושיעור y <b>' + sg[1] + '</b>. איפה היא נמצאת?', fig: quadFig(), options: r3.options, answer: r3.answer,
+        expl: QRULE, check: function (i) { return r3.options[i] === o3[q3]; } };
+    }
+    var onX = Math.random() < 0.5, k = pick([-1, 1]) * X, P = onX ? [k, 0] : [0, k];
+    var C = onX ? 'על ציר ה־x' : 'על ציר ה־y';
+    var W = [onX ? 'על ציר ה־y' : 'על ציר ה־x'].concat(onX ? [k > 0 ? 'ברביע 1' : 'ברביע 2', k > 0 ? 'ברביע 4' : 'ברביע 3'] : [k > 0 ? 'ברביע 1' : 'ברביע 3', k > 0 ? 'ברביע 2' : 'ברביע 4']);
+    var r4 = finalize(C, W);
+    return { type: 'רביעים במערכת הצירים', prompt: 'איפה נמצאת הנקודה ' + M(pt(P[0], P[1])) + '?', fig: quadFig(), options: r4.options, answer: r4.answer,
+      expl: onX ? 'שיעור ה־y של הנקודה הוא 0, לכן היא על ציר ה־x – ולא באף רביע.' : 'שיעור ה־x של הנקודה הוא 0, לכן היא על ציר ה־y – ולא באף רביע.',
+      check: function (i) { return r4.options[i] === C; } };
+  };
+  T.readPoint = function () {
+    var X = ri(1, 5), Y = ri(1, 5); if (X === Y) Y = X === 5 ? 3 : X + 1;
+    var x = pick([1, -1]) * X, y = pick([1, -1]) * Y;
+    var r = finalize(M(pt(x, y)), [M(pt(y, x)), M(pt(-x, y)), M(pt(x, -y)), M(pt(-y, -x))]);
+    return { type: 'שיעורי נקודה במערכת הצירים', prompt: 'מהם שיעורי הנקודה המסומנת?', fig: graph({ pts: [[x, y]] }), options: r.options, answer: r.answer,
+      expl: 'הולכים מהנקודה ישר למטה או למעלה אל ציר ה־x: ' + M('x = ' + fmt(x)) + '. ואז אופקית אל ציר ה־y: ' + M('y = ' + fmt(y)) + '. כותבים קודם את x: ' + M(pt(x, y)) + '.',
+      check: function (i) { return r.options[i] === M(pt(x, y)); } };
+  };
+  var DEFS = [
+    ['מהי פונקציה?', 'התאמה שבה לכל ערך של x מתאים ערך <b>אחד בלבד</b> של y', ['התאמה שבה לכל ערך של y מתאים ערך אחד בלבד של x', 'כל קו שמשורטט במערכת צירים', 'התאמה שבה כל ערכי y חיוביים'], 'זו ההגדרה: לכל x – y אחד בלבד.'],
+    ['מהו <b>התחום</b> של פונקציה?', 'כל ערכי ה־x שהפונקציה מוגדרת עבורם', ['כל ערכי ה־y שהפונקציה מקבלת', 'ערכי ה־x שבהם הפונקציה עולה', 'הנקודה שבה הגרף חותך את ציר ה־y'], 'התחום – ערכי x. (ערכי ה־y שהפונקציה מקבלת הם הטווח.)'],
+    ['מהו <b>הטווח</b> של פונקציה?', 'כל ערכי ה־y שהפונקציה מקבלת', ['כל ערכי ה־x שהפונקציה מוגדרת עבורם', 'ערכי ה־x שבהם הפונקציה חיובית', 'המרחק בין שתי נקודות על הגרף'], 'הטווח – ערכי y. (ערכי ה־x הם התחום.)'],
+    ['פונקציה <b>עולה</b> בתחום מסוים. מה זה אומר?', 'כש־x גדל, גם y גדל', ['כש־x גדל, y קטן', 'ערכי y בתחום חיוביים', 'הגרף נמצא מעל ציר ה־x'], 'עולה: מתקדמים ימינה (x גדל) – הגרף עולה (y גדל).'],
+    ['פונקציה <b>יורדת</b> בתחום מסוים. מה זה אומר?', 'כש־x גדל, y קטן', ['כש־x גדל, גם y גדל', 'ערכי y בתחום שליליים', 'הגרף נמצא מתחת לציר ה־x'], 'יורדת: מתקדמים ימינה (x גדל) – הגרף יורד (y קטן).'],
+    ['פונקציה <b>קבועה</b> בתחום מסוים. מה זה אומר?', 'כש־x משתנה, y לא משתנה', ['כש־x גדל, y גדל באותו קצב', 'ערכי x לא משתנים', 'הגרף עובר בראשית הצירים'], 'קבועה: ערך y נשאר אותו ערך – הגרף אופקי.'],
+    ['פונקציה <b>חיובית</b> בתחום מסוים. מה זה אומר?', 'ערכי y בתחום חיוביים – הגרף מעל ציר ה־x', ['ערכי x בתחום חיוביים', 'הפונקציה עולה בתחום', 'הגרף מימין לציר ה־y'], 'חיובית/שלילית נקבע לפי ערכי <b>y</b>: מעל ציר ה־x – חיובית.'],
+    ['פונקציה <b>שלילית</b> בתחום מסוים. מה זה אומר?', 'ערכי y בתחום שליליים – הגרף מתחת לציר ה־x', ['ערכי x בתחום שליליים', 'הפונקציה יורדת בתחום', 'הגרף משמאל לציר ה־y'], 'חיובית/שלילית נקבע לפי ערכי <b>y</b>: מתחת לציר ה־x – שלילית.'],
+    ['מהו <b>השיפוע</b> של ישר?', 'השינוי בערכי y חלקי השינוי בערכי x (גובה המדרגה חלקי רוחב המדרגה)', ['השינוי בערכי x חלקי השינוי בערכי y', 'ערך y כאשר x = 0', 'הזווית בין הישר לציר ה־y'], 'השיפוע = גובה המדרגה : רוחב המדרגה = השינוי ב־y : השינוי ב־x.'],
+    ['מה פירוש <b>קצב השתנות אחיד</b>?', 'על כל הגדלה של x ב־1, y משתנה תמיד באותו מספר', ['ערכי y תמיד גדלים', 'ערכי x ו־y שווים', 'y משתנה כל פעם במספר אחר'], 'קצב אחיד – אותו שינוי ב־y על כל הגדלה של x ב־1. הגרף של פונקציה כזו הוא ישר.']
+  ];
+  T.defBasic = function () {
+    var d = pick(DEFS), r = finalize(d[1], shuffle(d[2]));
+    return { type: 'הגדרות: ' + stripM(d[0]).replace(/[?]/, '').replace(/^(מהו |מהי |מה פירוש )/, '').replace(/^פונקציה (\S+).*/, '$1'), prompt: d[0], fig: '', options: r.options, answer: r.answer, expl: d[3],
+      check: function (i) { return r.options[i] === d[1]; } };
+  };
+  T.pointOn = function () {
+    var a = pick([2, 3, -2, -3, 4]), p = pick([1, 2, 3, -1, -2]), q = a * p;
+    var cand = [[p, q + 1], [q, p], [p, -q], [p, p + a], [-p, q], [p + 1, q]];
+    var wrong = cand.filter(function (c) { return !near(c[1], a * c[0]); }).map(function (c) { return M(pt(c[0], c[1])); });
+    var r = finalize(M(pt(p, q)), shuffle(wrong));
+    return { type: 'נקודה על גרף הפונקציה', prompt: 'איזו מהנקודות הבאות נמצאת על הגרף של הפונקציה ' + M(rule(a)) + '?', fig: '',
+      options: r.options, answer: r.answer, expl: 'מציבים את שיעור ה־x של הנקודה: ' + M(fmt(a) + ' · ' + paren(p) + ' = ' + fmt(q)) + '. יצא בדיוק שיעור ה־y, לכן הנקודה ' + M(pt(p, q)) + ' על הגרף.',
+      check: function (i) { var m = r.options[i].match(/\(([^,]+), ([^)]+)\)/); var X = parseNum(m[1]), Y = parseNum(m[2]); return near(Y, a * X); } };
+  };
+  T.incDec = function () {
+    var a = pick([2, 3, -2, -3, 0.5, -0.5, 1, -1, 4, -4]), byGraph = Math.random() < 0.5;
+    var labels = ['עולה', 'יורדת', 'קבועה', 'עולה ואחר כך יורדת'];
+    var correct = a > 0 ? 'עולה' : 'יורדת';
+    var r = finalize(correct, labels.filter(function (l) { return l !== correct; }));
+    return { type: 'עולה או יורדת', prompt: byGraph ? 'לפניכם גרף של פונקציה. הפונקציה היא:' : 'הפונקציה ' + M(rule(a)) + ' היא:', fig: byGraph ? graph({ lines: [{ a: a }] }) : '',
+      options: r.options, answer: r.answer,
+      expl: byGraph ? (a > 0 ? 'כשמתקדמים ימינה על ציר ה־x, הגרף עולה – ערכי y גדלים.' : 'כשמתקדמים ימינה על ציר ה־x, הגרף יורד – ערכי y קטנים.')
+        : 'השיפוע הוא ' + M(fmt(a)) + (a > 0 ? ', מספר חיובי, לכן הפונקציה עולה.' : ', מספר שלילי, לכן הפונקציה יורדת.'),
+      check: function (i) { return r.options[i] === (a > 0 ? 'עולה' : 'יורדת'); } };
+  };
+  var FUNCS = [
+    function () { return { curve: sample(function (x) { return 0.4 * x * x - 3; }, -4.6, 4.6, 40) }; },
+    function () { return { curve: sample(function (x) { return 2.5 * Math.sin(x * 1.2); }, -5.5, 5.5, 60) }; },
+    function () { return { curve: [[-5, 4], [0, -2], [5, 4]] }; },
+    function () { return { lines: [{ a: pick([1, -2, 0.5]) }] }; },
+    function () { return { curve: sample(function (x) { return 0.06 * x * x * x - x; }, -5.5, 5.5, 50) }; },
+    function () { return { curve: [[-5, -1], [-2, 3], [1, 3], [4, -3], [5.5, -1]] }; }
+  ];
+  var NONF = [
+    function () { return { circle: [0, 0, 3.5, 3.5] }; },
+    function () { return { curve: [[2, -5.5], [2, 5.5]] }; },
+    function () { return { curve: sample(function (y) { return 0.4 * y * y - 3; }, -4.6, 4.6, 40).map(function (p) { return [p[1], p[0]]; }) }; },
+    function () { return { circle: [1, 0, 2, 4] }; },
+    function () { return { curve: sample(function (y) { return 0.06 * y * y * y - y; }, -5.5, 5.5, 50).map(function (p) { return [p[1], p[0]]; }) }; }
+  ];
+  T.isFunc = function () {
+    var askNot = Math.random() < 0.6;
+    var one = askNot ? pick(NONF) : pick(FUNCS), rest = shuffle(askNot ? FUNCS : NONF).slice(0, 3);
+    function g(spec) { var o = spec(); o.small = true; o.R = 6; return graph(o); }
+    var correct = g(one), wrong = rest.map(g);
+    var r = finalize(correct, wrong);
+    return { type: 'האם הגרף מייצג פונקציה', optKind: 'svg', prompt: askNot ? 'איזה מהגרפים הבאים <b>אינו</b> מייצג פונקציה?' : 'איזה מהגרפים הבאים מייצג פונקציה?', fig: '',
+      options: r.options, answer: r.answer,
+      expl: 'בפונקציה, לכל ערך של x מתאים ערך <b>אחד בלבד</b> של y. ' + (askNot ? 'בגרף הנכון יש ערכי x שמתאימים להם שני ערכי y: קו אנכי חותך אותו ביותר מנקודה אחת.' : 'רק בגרף הנכון כל קו אנכי חותך את הגרף בנקודה אחת לכל היותר.'),
+      check: function (i) { return r.options[i] === correct; } };
+  };
+
+  /* ================= רמה 2 ================= */
+  T.tableToRule = function () {
+    var a = pick([2, 3, 4, -2, -3, 0.5, 1.5, -1.5, 5]), step = pick([1, 2]), start = step === 1 ? pick([0, 1, -1]) : pick([0, 2, -2]);
+    if (!Number.isInteger(a * step)) step = 2, start = pick([0, 2, -2]);
+    var xs = [0, 1, 2, 3].map(function (k) { return start + k * step; }), ys = xs.map(function (x) { return a * x; });
+    var x1 = xs.filter(function (x) { return x !== 0; })[0], y1 = a * x1;
+    var cands = [rule(a * step === a ? a + 1 : a * step), rule(-a), rule(a + 1), rule(2 * a), rule(a - 1), rule(3 * a)].filter(function (s2) { return parseRule(s2).a !== 0; });
+    var bad = function (s) { var m = parseRule(s); return xs.some(function (x, k) { return !near(m.a * x + m.b, ys[k]); }); };
+    var r = finalize(M(rule(a)), cands.filter(bad).map(M));
+    return { type: 'מטבלה לייצוג אלגברי', prompt: 'הטבלה מתארת פונקציה קווית שגרפה עובר בראשית הצירים. מהו הייצוג האלגברי שלה?', fig: table(xs, ys),
+      options: r.options, answer: r.answer, expl: 'בכל נקודה בטבלה ' + M('y : x') + ' שווה ל־' + M(fmt(a)) + ', למשל ' + M(fmt(y1) + ' : ' + paren(x1) + ' = ' + fmt(a)) + '. לכן ' + M(rule(a)) + '.',
+      check: function (i) { return !bad(stripM(r.options[i])); } };
+  };
+  var PQ = [[1, 1], [1, 2], [1, 3], [1, -1], [1, -2], [1, -3], [2, 1], [2, -1], [2, 3], [2, -3], [1, 4], [2, 5]];
+  T.graphToRule = function () {
+    var pq = pick(PQ), p = pq[0], q = pq[1], a = q / p;
+    var cands = [p / q, -a, q, a + 1, a * 2, -p / q, a / 2, 3 * a].filter(function (v) { return !near(v, a) && v !== 0 && Number.isInteger(r2(v * 2)); }).map(rule);
+    var r = finalize(M(rule(a)), shuffle(cands).map(M));
+    return { type: 'מגרף לייצוג אלגברי', prompt: 'הגרף מייצג פונקציה קווית שעוברת בראשית הצירים ובנקודה המסומנת. מהו הייצוג האלגברי של הפונקציה?', fig: graph({ lines: [{ a: a }], pts: [[p, q]] }),
+      options: r.options, answer: r.answer, expl: 'הישר עובר דרך ' + M('(0, 0)') + ' ודרך ' + M(pt(p, q)) + '. השיפוע הוא גובה המדרגה חלקי רוחב המדרגה: ' + M(fmt(q) + ' : ' + fmt(p) + ' = ' + fmt(a)) + '. לכן ' + M(rule(a)) + '.',
+      check: function (i) { return near(parseRule(stripM(r.options[i])).a, a); } };
+  };
+  T.ruleToGraph = function () {
+    var a = pick([1, 2, 3, -1, -2, -3, 0.5, -0.5]);
+    var pool = [-a, 1 / a, a * 2, -1 / a, a / 2, a + 1].filter(function (v, k, arr) { return !near(v, a) && Math.abs(v) <= 4 && Math.abs(v) >= 0.25 && arr.findIndex(function (w) { return near(w, v); }) === k; });
+    var w = shuffle(pool).slice(0, 3);
+    function g(v) { return graph({ lines: [{ a: v }], small: true, R: 6 }); }
+    var correct = g(a), r = finalize(correct, w.map(g));
+    return { type: 'מייצוג אלגברי לגרף', optKind: 'svg', prompt: 'איזה מהגרפים הבאים הוא הגרף של הפונקציה ' + M(rule(a)) + '?', fig: '',
+      options: r.options, answer: r.answer,
+      expl: 'בגרף הנכון, כש־' + M('x = ' + (Number.isInteger(a) ? 1 : 2)) + ' מתקבל ' + M('y = ' + fmt(a * (Number.isInteger(a) ? 1 : 2))) + '. ' + (a > 0 ? 'הישר עולה' : 'הישר יורד') + ' ועובר בראשית הצירים.',
+      check: function (i) { return r.options[i] === correct; } };
+  };
+  T.slopeFromPoint = function () {
+    var a = pick([2, 3, 4, -2, -3, -4, 0.5, -0.5, 1.5, 5]), p = pick(a === 0.5 || a === -0.5 || a === 1.5 ? [2, 4, 6, -2] : [2, 3, 4, -2, -3, 5]), q = a * p;
+    var r = numOpts(a, [p / q, q - p, -a, q, q * p]);
+    return { type: 'מציאת השיפוע מנקודה', prompt: 'הגרף של הפונקציה ' + M('y = mx') + ' עובר בנקודה ' + M(pt(p, q)) + '. מהו השיפוע m?', fig: '',
+      options: r.options, answer: r.answer, expl: 'מציבים את הנקודה: ' + M(fmt(q) + ' = m · ' + paren(p)) + ', ולכן ' + M('m = ' + fmt(q) + ' : ' + paren(p) + ' = ' + fmt(a)) + '.',
+      check: function (i) { return near(parseNum(r.options[i]) * p, q); } };
+  };
+  T.rate = function () {
+    if (Math.random() < 0.55) {
+      var a = pick([2, 3, 4, 5, -2, -3, 1.5]), s = pick([2, 3]), xs = [0, 1, 2, 3].map(function (k) { return k * s; }), ys = xs.map(function (x) { return a * x; });
+      var r = numOpts(a, [a * s, s, ys[1] + a, -a]);
+      return { type: 'קצב השתנות', prompt: 'לפניכם טבלת ערכים של פונקציה קווית. בכמה משתנה y כאשר x גדל ב־1?', fig: table(xs, ys),
+        options: r.options, answer: r.answer, expl: 'כש־x גדל ב־' + fmt(s) + ', y משתנה ב־' + M(fmt(a * s)) + '. לכן כש־x גדל ב־1, y משתנה ב־' + M(fmt(a * s) + ' : ' + fmt(s) + ' = ' + fmt(a)) + '. זה קצב ההשתנות (השיפוע).',
+        check: function (i) { return near(parseNum(r.options[i]), a); } };
+    }
+    var xs2 = [0, 1, 2, 3], b = pick([2, 3, 4, 5]);
+    var uni = xs2.map(function (x) { return b * x + pick([0, 1]) * 0; });
+    var nonu = [xs2.map(function (x) { return x * x; }), [0, b, 2 * b + 1, 3 * b], [1, 2, 4, 8], [0, b, b, 2 * b]];
+    var cT = table(xs2, uni), r2_ = finalize(cT, shuffle(nonu).slice(0, 3).map(function (ys) { return table(xs2, ys); }));
+    return { type: 'קצב השתנות', optKind: 'tbl', prompt: 'באיזו טבלה קצב ההשתנות של הפונקציה <b>אחיד</b>?', fig: '',
+      options: r2_.options, answer: r2_.answer, expl: 'בטבלה הנכונה, בכל הגדלה של x ב־1, ערך y גדל תמיד באותו מספר (' + M(fmt(b)) + '). בשאר הטבלאות השינויים בערכי y אינם קבועים.',
+      check: function (i) { return r2_.options[i] === cT; } };
+  };
+  T.steep = function () {
+    var steepest = Math.random() < 0.6, set = shuffle([0.5, 1, 2, 3, 4, 5, 1.5]).slice(0, 4).map(function (v) { return Math.random() < 0.45 ? -v : v; });
+    var key = set.reduce(function (b, v) { return steepest ? (Math.abs(v) > Math.abs(b) ? v : b) : (Math.abs(v) < Math.abs(b) ? v : b); });
+    var r = finalize(M(rule(key)), set.filter(function (v) { return v !== key; }).map(function (v) { return M(rule(v)); }));
+    return { type: 'תלילות ושיפוע', prompt: 'הגרף של איזו מהפונקציות הבאות הוא ה' + (steepest ? '<b>תלול</b>' : '<b>מתון</b>') + ' ביותר?', fig: '',
+      options: r.options, answer: r.answer, expl: 'משווים את <b>הערך המוחלט</b> של השיפועים (בלי להתחשב בסימן). ' + (steepest ? 'ככל שהערך המוחלט גדול יותר, הישר תלול יותר' : 'ככל שהערך המוחלט קטן יותר, הישר מתון יותר') + ', לכן ' + M(rule(key)) + '.',
+      check: function (i) { var v = parseRule(stripM(r.options[i])).a; return set.every(function (w) { return steepest ? Math.abs(v) >= Math.abs(w) : Math.abs(v) <= Math.abs(w); }); } };
+  };
+  T.intervals = function () {
+    var kinds = shuffle(['up', 'down', 'flat']); kinds.push(pick(['up', 'down']));
+    if (kinds[3] === kinds[2]) kinds[3] = kinds[2] === 'up' ? 'down' : 'up';
+    var xs = [-6, -3, 0, 2, 5], y = ri(-1, 1), pts = [[xs[0], y]];
+    for (var k = 0; k < 4; k++) { var d = xs[k + 1] - xs[k], dy = kinds[k] === 'flat' ? 0 : (kinds[k] === 'up' ? 1 : -1) * Math.min(d, ri(2, 4)); if (Math.abs(y + dy) > 5) dy = -dy, kinds[k] = kinds[k] === 'up' ? 'down' : kinds[k] === 'down' ? 'up' : 'flat'; y += dy; pts.push([xs[k + 1], y]); }
+    var flatAt0 = kinds.some(function (kd, k) { return kd === 'flat' && pts[k][1] === 0; });
+    if (flatAt0) { var mx = Math.max.apply(null, pts.map(function (q) { return q[1]; })); var sh = mx <= 4 ? 1 : -1; pts = pts.map(function (q) { return [q[0], q[1] + sh]; }); }
+    if (pts.some(function (q) { return Math.abs(q[1]) > 5 || (q[1] === 0 && false); })) return T.intervals();
+    var target = pick(['up', 'down', 'flat']);
+    var segs = kinds.map(function (kd, k) { return { kd: kd, a: xs[k], b: xs[k + 1] }; });
+    var match = segs.filter(function (s) { return s.kd === target; });
+    if (match.length !== 1) return T.intervals();
+    var iv = function (a, b) { return M(fmt(a) + ' &lt; x &lt; ' + fmt(b)); };
+    var m0 = match[0], yA = pts[xs.indexOf(m0.a)][1], yB = pts[xs.indexOf(m0.b)][1];
+    var wrong = segs.filter(function (s) { return s !== m0; }).map(function (s) { return iv(s.a, s.b); });
+    if (yA !== yB) wrong.push(iv(Math.min(yA, yB), Math.max(yA, yB)));
+    var r = finalize(iv(m0.a, m0.b), wrong);
+    var word = { up: 'עולה', down: 'יורדת', flat: 'קבועה' }[target];
+    return { type: 'תחומי עלייה, ירידה וקביעות', prompt: 'לפניכם גרף של פונקציה. באיזה תחום הפונקציה <b>' + word + '</b>?', fig: graph({ poly: pts }),
+      options: r.options, answer: r.answer, expl: 'בתחום ' + iv(m0.a, m0.b) + ' הגרף ' + { up: 'עולה – כשמתקדמים ימינה ערכי y גדלים', down: 'יורד – כשמתקדמים ימינה ערכי y קטנים', flat: 'אופקי – ערך y לא משתנה' }[target] + '. התחום נקבע לפי ערכי <b>x</b>.',
+      check: function (i) { var m = stripM(r.options[i]).match(/^(\S+) < x < (\S+)$/); var A = parseNum(m[1]), B = parseNum(m[2]); return segs.some(function (s) { return s.kd === target && s.a === A && s.b === B; }); } };
+  };
+
+  T.quadLine = function () {
+    var a = pick([1, 2, 3, 0.5, -1, -2, -3, -0.5]);
+    var C = a > 0 ? 'ברביע 1 וברביע 3' : 'ברביע 2 וברביע 4';
+    var all = ['ברביע 1 וברביע 3', 'ברביע 2 וברביע 4', 'ברביע 1 וברביע 2', 'ברביע 3 וברביע 4'];
+    var r = finalize(C, all.filter(function (o) { return o !== C; }));
+    return { type: 'רביעים שהגרף עובר בהם', prompt: 'באילו רביעים עובר הגרף של הפונקציה ' + M(rule(a)) + '?', fig: quadFig(), options: r.options, answer: r.answer,
+      expl: a > 0 ? 'השיפוע חיובי: כש־x חיובי גם y חיובי (רביע 1), וכש־x שלילי גם y שלילי (רביע 3).' : 'השיפוע שלילי: כש־x חיובי y שלילי (רביע 4), וכש־x שלילי y חיובי (רביע 2).',
+      check: function (i) { return r.options[i] === C; } };
+  };
+  T.posNeg = function () {
+    var a = pick([2, 3, 0.5, 1, -1, -2, -3, -0.5]), wantPos = Math.random() < 0.5, byGraph = Math.random() < 0.5;
+    var C = (a > 0) === wantPos ? M('x > 0') : M('x &lt; 0');
+    var r = finalize(C, [M('x > 0'), M('x &lt; 0'), 'לכל ערך של x', 'אין ערכי x כאלה', M('y > 0')].filter(function (o) { return o !== C; }).slice(0, 4));
+    return { type: 'תחום חיוביות ושליליות', prompt: (byGraph ? 'לפניכם גרף של פונקציה. ' : 'נתונה הפונקציה ' + M(rule(a)) + '. ') + 'עבור אילו ערכי x הפונקציה <b>' + (wantPos ? 'חיובית' : 'שלילית') + '</b>?', fig: byGraph ? graph({ lines: [{ a: a }] }) : '',
+      options: r.options, answer: r.answer,
+      expl: (wantPos ? 'פונקציה חיובית – הגרף מעל ציר ה־x. ' : 'פונקציה שלילית – הגרף מתחת לציר ה־x. ') + (a > 0 ? 'הישר עולה: משמאל לראשית הוא מתחת לציר ה־x ומימין לה – מעליו.' : 'הישר יורד: משמאל לראשית הוא מעל ציר ה־x ומימין לה – מתחתיו.') + ' לכן התשובה ' + C + '.',
+      check: function (i) { return r.options[i] === C; } };
+  };
+  T.domRange = function () {
+    var x0 = -ri(3, 5), x1 = ri(3, 5), xs = [x0, -1, 2, x1], ys = xs.map(function () { return ri(-4, 5); });
+    ys[1] = Math.max.apply(null, ys) + 1 > 6 ? ys[1] : ys[1];
+    var mn = Math.min.apply(null, ys), mx = Math.max.apply(null, ys);
+    if (mn === mx || (mn === ys[0] && mx === ys[3]) || (mx === ys[0] && mn === ys[3])) return T.domRange();
+    var pts = xs.map(function (x, k) { return [x, ys[k]]; });
+    var askDom = Math.random() < 0.5;
+    var dom = M(fmt(x0) + ' ≤ x ≤ ' + fmt(x1)), rng = M(fmt(mn) + ' ≤ y ≤ ' + fmt(mx));
+    var yEnds = M(fmt(Math.min(ys[0], ys[3])) + ' ≤ y ≤ ' + fmt(Math.max(ys[0], ys[3])));
+    var C = askDom ? dom : rng;
+    var W = askDom ? [M(fmt(mn) + ' ≤ x ≤ ' + fmt(mx)), rng, M(fmt(x0) + ' ≤ y ≤ ' + fmt(x1)), M('0 ≤ x ≤ ' + fmt(x1)), M(fmt(x0 + 1) + ' ≤ x ≤ ' + fmt(x1 - 1))] : [dom, yEnds, M(fmt(mn) + ' ≤ x ≤ ' + fmt(mx)), M('0 ≤ y ≤ ' + fmt(mx)), M(fmt(mn + 1) + ' ≤ y ≤ ' + fmt(mx - 1))];
+    var r = finalize(C, W);
+    return { type: askDom ? 'תחום של פונקציה מגרף' : 'טווח של פונקציה מגרף', prompt: 'הגרף בשרטוט הוא כל הגרף של הפונקציה. מהו <b>' + (askDom ? 'התחום' : 'הטווח') + '</b> של הפונקציה?', fig: graph({ poly: pts }),
+      options: r.options, answer: r.answer,
+      expl: askDom ? 'התחום – ערכי x: הגרף מתחיל ב־' + M('x = ' + fmt(x0)) + ' ונגמר ב־' + M('x = ' + fmt(x1)) + '.' : 'הטווח – ערכי y: הנקודה הנמוכה ביותר בגובה ' + M(fmt(mn)) + ' והגבוהה ביותר בגובה ' + M(fmt(mx)) + '. (לא הקצוות של הגרף – הנקודות הנמוכה והגבוהה ביותר.)',
+      check: function (i) { return r.options[i] === C; } };
+  };
+  T.truth = function () {
+    var a = pick([2, 3, 4, -2, -3, 0.5, -0.5]), b = pick([1, 5, -6, 0.5].filter(function (v) { return Math.abs(v) !== Math.abs(a); })), p = pick([1, 2, 3]);
+    var R = M(rule(a));
+    var pool = [
+      ['הגרף של ' + R + ' עובר בראשית הצירים.', true],
+      ['הגרף של ' + R + ' לא עובר בראשית הצירים.', false],
+      ['הפונקציה ' + R + ' עולה.', a > 0], ['הפונקציה ' + R + ' יורדת.', a < 0],
+      ['הפונקציה ' + R + ' חיובית כאשר ' + M('x > 0') + '.', a > 0], ['הפונקציה ' + R + ' שלילית כאשר ' + M('x > 0') + '.', a < 0],
+      ['הנקודה ' + M(pt(p, a * p)) + ' נמצאת על הגרף של ' + R + '.', true], ['הנקודה ' + M(pt(a * p, p)) + ' נמצאת על הגרף של ' + R + '.', near(p, a * a * p)],
+      ['הגרף של ' + R + ' עובר ברביע 2.', a < 0], ['הגרף של ' + R + ' עובר ברביע 1.', a > 0],
+      ['השיפוע של ' + R + ' הוא ' + M(fmt(-a)) + '.', false],
+      ['הגרף של ' + R + ' תלול יותר מהגרף של ' + M(rule(b)) + '.', Math.abs(a) > Math.abs(b)],
+      ['כש־x גדל ב־1, ערך הפונקציה ' + R + ' גדל ב־' + M(fmt(Math.abs(a))) + '.', a > 0], ['כש־x גדל ב־1, ערך הפונקציה ' + R + ' קטן ב־' + M(fmt(Math.abs(a))) + '.', a < 0]
+    ];
+    var T1 = shuffle(pool.filter(function (q) { return q[1]; }))[0], F = shuffle(pool.filter(function (q) { return !q[1]; })).slice(0, 3);
+    var r = finalize(T1[0], F.map(function (q) { return q[0]; }));
+    return { type: 'טענות נכונות על פונקציה', prompt: 'איזו מהטענות הבאות <b>נכונה</b>?', fig: '', options: r.options, answer: r.answer,
+      expl: 'הטענה הנכונה: ' + T1[0] + ' (השיפוע ' + M(fmt(a)) + (a > 0 ? ' חיובי' : ' שלילי') + '.)',
+      check: function (i) { return r.options[i] === T1[0]; } };
+  };
+
+  /* ================= רמה 3 ================= */
+  var ITEMS = [['מחברת', 'מחברות'], ['כרטיס לקולנוע', 'כרטיסים'], ['ק"ג תפוחים', 'ק"ג'], ['חבילת מדבקות', 'חבילות']];
+  T.wordPrice = function () {
+    var it = pick(ITEMS), p = pick([4, 5, 6, 7, 8, 12, 15, 25]);
+    if (Math.random() < 0.5) {
+      var cands = ['x = ' + p + 'y', 'y = ' + p, 'y = x : ' + p, 'y = x'];
+      var r = finalize(M('y = ' + p + 'x'), cands.map(M));
+      return { type: 'שאלה מילולית – מחיר ליחידה', prompt: 'מחיר של ' + it[0] + ' הוא ' + p + ' ש"ח. x – מספר ה' + it[1] + ' שקונים, y – המחיר הכולל בש"ח. מהו הייצוג האלגברי של הפונקציה?', fig: '',
+        options: r.options, answer: r.answer, expl: 'כל יחידה מוסיפה ' + p + ' ש"ח, ולכן המחיר הכולל הוא ' + p + ' כפול מספר היחידות: ' + M('y = ' + p + 'x') + '.',
+        check: function (i) { return r.options[i] === M('y = ' + p + 'x'); } };
+    }
+    var k = ri(3, 9), N = p * k;
+    var r2_ = numOpts(k, [N - p, N + p, N * p, k + 1, k - 1]);
+    return { type: 'שאלה מילולית – מחיר ליחידה', prompt: 'מחיר של ' + it[0] + ' הוא ' + p + ' ש"ח, והמחיר הכולל מתואר בפונקציה ' + M('y = ' + p + 'x') + '. כמה ' + it[1] + ' אפשר לקנות ב־' + N + ' ש"ח בדיוק?', fig: '',
+      options: r2_.options, answer: r2_.answer, expl: 'מציבים ' + M('y = ' + N) + ': ' + M(N + ' = ' + p + 'x') + ', ולכן ' + M('x = ' + N + ' : ' + p + ' = ' + k) + '.',
+      check: function (i) { return near(parseNum(r2_.options[i]) * p, N); } };
+  };
+  T.wordSpeed = function () {
+    var v = pick([40, 50, 60, 70, 80, 90]), t = pick([2, 3, 4, 1.5, 2.5, 5]), D = v * t;
+    if (Math.random() < 0.5) {
+      var r = numOpts(D, [v + t, D / 2, v * (t + 1), D + v]);
+      return { type: 'שאלה מילולית – מהירות', prompt: 'מכונית נוסעת במהירות קבועה של ' + v + ' קמ"ש. הדרך שעברה (y, בק"מ) תלויה בזמן (x, בשעות) לפי ' + M('y = ' + v + 'x') + '. כמה ק"מ עברה המכונית תוך ' + fmt(t) + ' שעות?', fig: '',
+        options: r.options, answer: r.answer, expl: 'מציבים ' + M('x = ' + fmt(t)) + ': ' + M('y = ' + v + ' · ' + fmt(t) + ' = ' + fmt(D)) + ' ק"מ.',
+        check: function (i) { return near(parseNum(r.options[i]), D); } };
+    }
+    var r2_ = numOpts(t, [D - v, D / 10, t + 1, v / t]);
+    return { type: 'שאלה מילולית – מהירות', prompt: 'רכבת נוסעת במהירות קבועה לפי הפונקציה ' + M('y = ' + v + 'x') + ' (x – זמן בשעות, y – דרך בק"מ). כמה שעות ייקח לרכבת לעבור ' + fmt(D) + ' ק"מ?', fig: '',
+      options: r2_.options, answer: r2_.answer, expl: 'מציבים ' + M('y = ' + fmt(D)) + ': ' + M(fmt(D) + ' = ' + v + 'x') + ', ולכן ' + M('x = ' + fmt(D) + ' : ' + v + ' = ' + fmt(t)) + ' שעות.',
+      check: function (i) { return near(parseNum(r2_.options[i]) * v, D); } };
+  };
+  T.compare2 = function () {
+    var a = pick([8, 10, 12, 15]), b = a + pick([2, 3, 4, 5]), x = ri(4, 9), d = (b - a) * x;
+    if (Math.random() < 0.5) {
+      var r = numOpts(d, [b - a, a * x, b * x, d + (b - a)]);
+      return { type: 'השוואת שתי פונקציות', prompt: 'בחנות א\' המחיר הכולל הוא ' + M('y = ' + a + 'x') + ' ובחנות ב\' ' + M('y = ' + b + 'x') + ' (x – מספר פריטים, y – מחיר בש"ח). בכמה ש"ח זול יותר לקנות ' + x + ' פריטים בחנות א\'?', fig: '',
+        options: r.options, answer: r.answer, expl: 'חנות א\': ' + M(a + ' · ' + x + ' = ' + a * x) + '. חנות ב\': ' + M(b + ' · ' + x + ' = ' + b * x) + '. ההפרש: ' + M(b * x + ' − ' + a * x + ' = ' + d) + ' ש"ח.',
+        check: function (i) { return near(parseNum(r.options[i]), b * x - a * x); } };
+    }
+    var r2_ = numOpts(x, [d, d / a, x + 1, b - a]);
+    return { type: 'השוואת שתי פונקציות', prompt: 'בחנות א\' המחיר הכולל הוא ' + M('y = ' + a + 'x') + ' ובחנות ב\' ' + M('y = ' + b + 'x') + '. עבור כמה פריטים ההפרש בין המחירים יהיה ' + d + ' ש"ח?', fig: '',
+      options: r2_.options, answer: r2_.answer, expl: 'על כל פריט ההפרש הוא ' + M(b + ' − ' + a + ' = ' + (b - a)) + ' ש"ח. לכן מספר הפריטים: ' + M(d + ' : ' + (b - a) + ' = ' + x) + '.',
+      check: function (i) { return near(parseNum(r2_.options[i]) * (b - a), d); } };
+  };
+  T.whatIf = function () {
+    var v = ri(0, 3), a = pick([2, 3, 0.5, 4]), sgn = pick([1, -1]), A = a * sgn;
+    var C, W, E;
+    if (v === 0) { C = 'תלול יותר'; W = ['מתון יותר', 'לא ישתנה', 'יורד במקום עולה']; E = 'הכפלת השיפוע פי 2 מגדילה את הערך המוחלט שלו, ולכן הישר תלול יותר.';
+      return mk('אם נכפיל את השיפוע של הפונקציה ' + M(rule(A)) + ' פי 2, הגרף יהיה:'); }
+    if (v === 1) { C = A > 0 ? 'יורד במקום עולה' : 'עולה במקום יורד'; W = ['תלול יותר', 'מתון יותר', 'לא יעבור בראשית הצירים']; E = 'שיפוע נגדי מחליף את הסימן: ' + (A > 0 ? 'שיפוע חיובי הופך לשלילי – הגרף יורד.' : 'שיפוע שלילי הופך לחיובי – הגרף עולה.') + ' הערך המוחלט לא משתנה, אז התלילות אותה תלילות.';
+      return mk('אם בפונקציה ' + M(rule(A)) + ' נחליף את השיפוע במספר הנגדי לו, הגרף יהיה:'); }
+    if (v === 2) { C = A > 0 ? 'חדה' : 'קהה'; W = A > 0 ? ['קהה', 'ישרה', 'שווה ל־0°'] : ['חדה', 'ישרה', 'שווה ל־0°']; E = (A > 0 ? 'שיפוע חיובי' : 'שיפוע שלילי') + ' – הזווית בין הישר לבין הכיוון החיובי של ציר ה־x היא ' + C + '.';
+      return mk('הזווית בין הגרף של ' + M(rule(A)) + ' לבין הכיוון החיובי של ציר ה־x היא:'); }
+    var p = pick([5, 6, 8]), q = p + pick([2, 3, 4]);
+    C = 'השיפוע יגדל מ־' + p + ' ל־' + q; W = ['השיפוע יקטן מ־' + p + ' ל־' + (p - 1), 'השיפוע לא ישתנה', 'הגרף יפסיק לעבור בראשית הצירים']; E = 'השיפוע הוא המחיר ליחידה – כמה גדל המחיר הכולל על כל פריט נוסף. לכן השיפוע יהיה ' + q + '.';
+    return mk('המחיר הכולל של מחברות מתואר בפונקציה ' + M('y = ' + p + 'x') + '. המחיר של מחברת עלה מ־' + p + ' ל־' + q + ' ש"ח. מה יקרה לגרף?');
+    function mk(prompt) { var r = finalize(C, W); return { type: 'מה יקרה אם…', prompt: prompt, fig: '', options: r.options, answer: r.answer, expl: E, check: function (i) { return r.options[i] === C; } }; }
+  };
+  T.findX = function () {
+    var a = pick([2, 3, 4, 5, -2, -3, -4, 6]), x = pick([-6, -4, -3, 2, 3, 5, 7, 8]), v = a * x;
+    var r = numOpts(x, [v * a, v - a, -x, v + a]);
+    return { type: 'מציאת x לפי ערך y', prompt: 'בפונקציה ' + M(rule(a)) + ', עבור איזה ערך של x מתקבל ' + M('y = ' + fmt(v)) + '?', fig: '',
+      options: r.options, answer: r.answer, expl: M(fmt(v) + ' = ' + fmt(a) + 'x') + ', ולכן ' + M('x = ' + fmt(v) + ' : ' + paren(a) + ' = ' + fmt(x)) + '.',
+      check: function (i) { return near(a * parseNum(r.options[i]), v); } };
+  };
+  T.twoStep = function () {
+    var a = pick([2, 3, 4, 5, -2, -3, 1.5]), p = pick(a === 1.5 ? [2, 4] : [2, 3, 4]), q = a * p, rr = pick(a === 1.5 ? [6, 8, 10] : [5, 6, 7, 10]), ans = a * rr;
+    var r = numOpts(ans, [q + (rr - p), q * rr, q / p * (rr - p), ans + a]);
+    return { type: 'שני שלבים: מנקודה לערך', prompt: 'הגרף של פונקציה מהצורה ' + M('y = mx') + ' עובר בנקודה ' + M(pt(p, q)) + '. מהו ערך y כאשר ' + M('x = ' + rr) + '?', fig: '',
+      options: r.options, answer: r.answer, expl: 'שלב 1: ' + M('m = ' + fmt(q) + ' : ' + p + ' = ' + fmt(a)) + '. שלב 2: ' + M('y = ' + fmt(a) + ' · ' + rr + ' = ' + fmt(ans)) + '.',
+      check: function (i) { return near(parseNum(r.options[i]), (q / p) * rr); } };
+  };
+  T.direct = function () {
+    var p = pick([6, 8, 12, 15]), f = pick([20, 30, 50]), L = pick([40, 60, 80]), c = pick([3, 4, 5]);
+    var C = 'כל כרטיס לבריכה עולה ' + p + ' ש"ח. y – המחיר הכולל, x – מספר הכרטיסים.';
+    var W = ['במכון כושר משלמים ' + f + ' ש"ח דמי הרשמה ועוד ' + p + ' ש"ח לכל אימון. y – המחיר הכולל, x – מספר האימונים.',
+      'במכל יש ' + L + ' ליטר מים, וכל דקה יוצאים ממנו ' + c + ' ליטר. y – כמות המים במכל, x – מספר הדקות.',
+      'x – אורך צלע של ריבוע בס"מ, y – שטח הריבוע בסמ"ר.',
+      'דנה גדולה מאחיה ב־' + c + ' שנים. x – גיל האח, y – הגיל של דנה.'];
+    var r = finalize(C, shuffle(W));
+    return { type: 'יחס ישר', prompt: 'איזה מהמצבים הבאים מתאר <b>יחס ישר</b> בין x ל־y?', fig: '',
+      options: r.options, answer: r.answer, expl: 'ביחס ישר הפונקציה היא מהצורה ' + M('y = mx') + ' – הגרף ישר שעובר בראשית הצירים: כש־x = 0 גם y = 0, וכשמכפילים את x פי 2 גם y גדל פי 2. רק במצב של הכרטיסים לבריכה ' + M('y = ' + p + 'x') + '.',
+      check: function (i) { return r.options[i] === C; } };
+  };
+
+  /* ================= רמה 4 – תשובה פתוחה ================= */
+  var O = {};
+  O.pointValue = function () { var a = pick([2, 3, 4, 6, -2, -3, 1.5, 2.5]), p = pick(Number.isInteger(a) ? [2, 3, 5] : [2, 4]), q = a * p, x = pick(Number.isInteger(a) ? [7, 8, 9, 11, 12] : [6, 8, 10]);
+    return { type: 'פתוחה: מנקודה לערך', prompt: 'הגרף של פונקציה מהצורה ' + M('y = mx') + ' עובר בנקודה ' + M(pt(p, q)) + '. מהו ערך y כאשר ' + M('x = ' + x) + '?', value: a * x,
+      expl: M('m = ' + fmt(q) + ' : ' + p + ' = ' + fmt(a)) + ', ולכן ' + M('y = ' + fmt(a) + ' · ' + x + ' = ' + fmt(a * x)) + '.' }; };
+  O.diff = function () { var a = pick([3, 4, 5, 7]), b = a + pick([2, 3, 6]), x = pick([6, 8, 9, 12]);
+    return { type: 'פתוחה: הפרש בין פונקציות', prompt: 'נתונות הפונקציות ' + M('y = ' + b + 'x') + ' ו־' + M('y = ' + a + 'x') + '. בכמה גדול ערך הפונקציה הראשונה מערך השנייה כאשר ' + M('x = ' + x) + '?', value: (b - a) * x,
+      expl: M(b + ' · ' + x + ' − ' + a + ' · ' + x + ' = ' + b * x + ' − ' + a * x + ' = ' + (b - a) * x) + '.' }; };
+  O.speed2 = function () { var v = pick([45, 60, 75, 80, 90]), t1 = pick([2, 3, 4]), t2 = pick([5, 6, 7]);
+    return { type: 'פתוחה: מהירות בשני שלבים', prompt: 'אופנוע נוסע במהירות קבועה. תוך ' + t1 + ' שעות הוא עבר ' + v * t1 + ' ק"מ. כמה ק"מ יעבור תוך ' + t2 + ' שעות?', value: v * t2,
+      expl: 'המהירות: ' + M(v * t1 + ' : ' + t1 + ' = ' + v) + ' קמ"ש. הדרך: ' + M(v + ' · ' + t2 + ' = ' + v * t2) + ' ק"מ.' }; };
+  O.missing = function () { var a = pick([3, 4, -2, 2.5, 6]), xs = Number.isInteger(a) ? [2, 5, pick([7, 9, 11])] : [2, 4, pick([6, 10, 12])], ys = xs.map(function (x) { return a * x; });
+    return { type: 'פתוחה: ערך חסר בטבלה', prompt: 'הטבלה מתארת פונקציה מהצורה ' + M('y = mx') + '. איזה מספר חסר במקום סימן השאלה?', fig: table(xs, [ys[0], ys[1], null]).replace('<td>?</td>', '<td>?</td>'),
+      value: ys[2], expl: M('m = ' + fmt(ys[0]) + ' : ' + xs[0] + ' = ' + fmt(a)) + ', ולכן ' + M('y = ' + fmt(a) + ' · ' + xs[2] + ' = ' + fmt(ys[2])) + '.' }; };
+  O.negX = function () { var a = pick([-3, -4, -6, -7, 5, 8]), x = pick([-9, -7, 6, 8, 11, 12]), v = a * x;
+    return { type: 'פתוחה: מציאת x', prompt: 'בפונקציה ' + M(rule(a)) + ', עבור איזה ערך של x מתקבל ' + M('y = ' + fmt(v)) + '?', value: x,
+      expl: M('x = ' + fmt(v) + ' : ' + paren(a) + ' = ' + fmt(x)) + '.' }; };
+  O.times = function () { var b = pick([0.5, 1, 2, 3]), k = pick([2, 3, 4, 5, 6]), a = b * k;
+    return { type: 'פתוחה: פי כמה תלול', prompt: 'פי כמה גדול השיפוע של ' + M(rule(a)) + ' מהשיפוע של ' + M(rule(b)) + '?', value: k,
+      expl: M(fmt(a) + ' : ' + fmt(b) + ' = ' + k) + '. הישר הראשון תלול פי ' + k + '.' }; };
+  O.twoPts = function () { var a = pick([2, 3, -2, -3, 4, 1.5]), x1 = pick(Number.isInteger(a) ? [1, 2, 3] : [2]), x2 = x1 + pick(Number.isInteger(a) ? [2, 3, 4] : [2, 4]);
+    return { type: 'פתוחה: שיפוע משתי נקודות', prompt: 'הנקודות ' + M(pt(x1, a * x1)) + ' ו־' + M(pt(x2, a * x2)) + ' נמצאות על ישר. מהו שיפוע הישר?', value: a,
+      expl: 'השינוי בערכי y חלקי השינוי בערכי x: ' + M('(' + fmt(a * x2) + ' − ' + paren(a * x1) + ') : (' + x2 + ' − ' + x1 + ') = ' + fmt(a * (x2 - x1)) + ' : ' + (x2 - x1) + ' = ' + fmt(a)) + '.' }; };
+
+  /* ================= חוקר ================= */
+  function explorer() {
+    var a = pick([3, 4]), xs = [0, 1, 2, 3, 4], ys = xs.map(function (x) { return a * x; });
+    var b = pick([2, 5]);
+    var list = [
+      { prompt: 'נחקור את הפונקציה ' + M(rule(a)) + '. בכמה גדל y כאשר x גדל מ־1 ל־2?', fig: table(xs, ys), c: fmt(a), w: [fmt(2 * a), '1', fmt(a + 1)], hint: 'הסתכלו בטבלה: מה ערך y כש־x = 1, ומה כש־x = 2?', expl: 'מ־' + a + ' ל־' + 2 * a + ': גדל ב־' + a + '.' },
+      { prompt: 'ובכמה גדל y כאשר x גדל מ־1 ל־3 (כלומר ב־2)?', fig: table(xs, ys), c: fmt(2 * a), w: [fmt(a), '2', fmt(3 * a)], hint: 'חשבו ' + M(fmt(3 * a) + ' − ' + fmt(a)) + '.', expl: 'מ־' + a + ' ל־' + 3 * a + ': גדל ב־' + 2 * a + ' – פי 2 מהשינוי כשה־x גדל ב־1.' },
+      { prompt: 'מה מקבלים כשמחלקים את השינוי ב־y בשינוי ב־x (' + M(fmt(2 * a) + ' : 2') + ')?', fig: '', c: 'את השיפוע ' + M(fmt(a)), w: ['את ערך y כש־x = 2', 'מספר שתלוי באיזה זוג נקודות בחרנו', 'תמיד 2'], hint: 'השוו את התוצאה למספר שמופיע לפני x בייצוג האלגברי.', expl: 'קצב ההשתנות זהה בכל מקום בגרף, והוא השיפוע ' + fmt(a) + '. זה נכון לכל פונקציה קווית.' },
+      { prompt: 'בפונקציה ' + M('y = −' + b + 'x') + ', מה קורה ל־y כאשר x גדל ב־1?', fig: '', c: 'y קטן ב־' + b, w: ['y גדל ב־' + b, 'y לא משתנה', 'y קטן ב־1'], hint: 'נסו להציב x = 1 ו־x = 2.', expl: 'השיפוע ' + M('−' + b) + ' שלילי: על כל הגדלה של x ב־1, y קטן ב־' + b + '. לכן הגרף יורד.' },
+      { prompt: 'לפניכם ' + M('y = 2x') + ' ו־' + M('y = 5x') + '. באיזו פונקציה y גדל מהר יותר, ואיך רואים את זה בגרף?', fig: graph({ lines: [{ a: 2 }, { a: 5, c: '#e4572e' }] }), c: M('y = 5x') + ' – הגרף שלה תלול יותר', w: [M('y = 2x') + ' – הגרף שלה תלול יותר', M('y = 5x') + ' – הגרף שלה מתון יותר', 'שתיהן גדלות באותו קצב, כי שתיהן עוברות בראשית'], hint: 'קצב ההשתנות הוא השיפוע. איזה שיפוע גדול יותר?', expl: 'קצב ההשתנות של ' + M('y = 5x') + ' הוא 5, ושל ' + M('y = 2x') + ' הוא 2. קצב גדול יותר = ישר תלול יותר (הקו הכתום).' },
+      { prompt: 'מכונה ממלאת 40 בקבוקים בכל דקה. x – מספר הדקות, y – מספר הבקבוקים שמולאו. מה הייצוג האלגברי ומה השיפוע?', fig: '', c: M('y = 40x') + ', שיפוע 40', w: [M('y = x') + ', שיפוע 40', M('x = 40y') + ', שיפוע 40', M('y = 40x') + ', שיפוע 1'], hint: 'כמה בקבוקים מתווספים על כל דקה?', expl: 'על כל דקה מתווספים 40 בקבוקים – זה קצב ההשתנות, וזה השיפוע: ' + M('y = 40x') + '.' }
+    ];
+    return list.map(function (q) { var r = finalize(q.c, q.w); return { type: 'חוקר', prompt: q.prompt, fig: q.fig, options: r.options, answer: r.answer, hint: q.hint, expl: q.expl, check: function (i) { return r.options[i] === q.c; } }; });
+  }
+
+  /* ---------- כלי עזר לבדיקה ---------- */
+  function stripM(h) { return String(h).replace(/<[^>]+>/g, '').replace(/&lt;/g, '<'); }
+  function parseNum(h) { return Number(stripM(h).replace(/−/g, '-').trim()); }
+  function parseRule(s) { // "y = 3x + 2" -> {a,b}
+    s = stripM(s).replace(/−/g, '-').replace(/\s/g, '');
+    var m = s.match(/^y=(-?[\d.]*)x([+-][\d.]+)?$/); if (!m) return { a: NaN, b: NaN };
+    var a = m[1] === '' ? 1 : m[1] === '-' ? -1 : Number(m[1]);
+    return { a: a, b: m[2] ? Number(m[2]) : 0 };
+  }
+
+  var PLAN = {
+    1: ['quadrant', 'quadrant', 'readPoint', 'readGraph', 'readTable', 'subst', 'pointOn', 'incDec', 'isFunc', 'defBasic'],
+    2: ['tableToRule', 'graphToRule', 'ruleToGraph', 'slopeFromPoint', 'rate', 'steep', 'intervals', 'quadLine', 'posNeg', 'domRange'],
+    3: ['wordPrice', 'wordSpeed', 'compare2', 'whatIf', 'findX', 'twoStep', 'direct', 'defBasic', 'truth', 'truth']
+  };
+  function level(n) { return shuffle(PLAN[n]).map(function (k) { var q = T[k](); q.key = k; return q; }); }
+  function open() { var k = pick(Object.keys(O)); var q = O[k](); q.key = k; q.open = true; return q; }
+  function parseAnswer(s) { s = String(s).replace(/−/g, '-').replace(/,/g, '.').replace(/\s/g, ''); if (!/^-?\d*\.?\d+$/.test(s)) return NaN; return Number(s); }
+
+  return { level: level, open: open, explorer: explorer, T: T, O: O, PLAN: PLAN, parseAnswer: parseAnswer, near: near, fmt: fmt };
+})();
+if (typeof module !== 'undefined') module.exports = GEN;
+
+</script>
+<script>
+{
+var APP = document.getElementById('app');
+var LS = CONF.ls;
+var S = null;          // מצב התלמיד
+var Q = null;          // סבב נוכחי
+var LET = ['א', 'ב', 'ג', 'ד'];
+var LNAME = { 1: 'רמה 1 – בסיס', 2: 'רמה 2 – ביניים', 3: 'רמה 3 – אתגר', 4: 'רמה 4 – אלופים וחוקרים' };
+var LDESC = CONF.ldesc;
+var PASS = 8, NQ = 10, STREAK_GOAL = 5;
+var EXEC = 'https://script.google.com/macros/s/AKfycbyU9Sx2yJE7wYBl_V9_AiXSOGoMiuYNnZP3CWH_w397MEN6MAbNGC8YLLj7mJ22YgNTdQ/exec' || '';
+var GS = !!(window.google && google.script && google.script.run);
+var LIVE = GS || !!EXEC;
+function api(fn, args, ok, fail) {
+  if (GS) { var r = google.script.run.withSuccessHandler(ok).withFailureHandler(fail); r[fn].apply(r, args); return; }
+  if (!EXEC) { fail(); return; }
+  fetch(EXEC, { method: 'POST', credentials: 'omit', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn: fn, args: args }) })
+    .then(function (x) { return x.text(); })
+    .then(function (t) { var j = JSON.parse(t); if (j.ok) ok(j.r); else fail(j.err); })
+    .catch(fail);
+}
+document.addEventListener('click', function (e) { var b = e.target.closest('[data-j]'); if (!b) return; S.level = +b.dataset.j; if (S.level === 4) { S.stage = 'A'; S.streak = 0; } save(); route(); });
+
+function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function save() { try { localStorage.setItem(LS, JSON.stringify(S)); } catch (e) {} }
+function loadLocal() { try { return JSON.parse(localStorage.getItem(LS) || 'null'); } catch (e) { return null; } }
+function normName(n) { return String(n || '').replace(/\s+/g, ' ').trim(); }
+function blank(name) { return { name: name, level: 1, att: { 1: 0, 2: 0, 3: 0 }, last: '', stage: 'A', streak: 0, best: 0, open: 0 }; }
+
+/* ---------- שליחה לגיליון של המורה ---------- */
+var outbox = [], sending = false;
+function send(p) { p.app = CONF.app; p.name = S.name; p.state = S; outbox.push(JSON.stringify(p)); flush(); }
+function flush() {
+  if (sending || !outbox.length) return;
+  if (!LIVE) { outbox = []; return; }
+  sending = true; var item = outbox[0];
+  api('report', [item], function () { outbox.shift(); sending = false; flush(); }, function () { sending = false; setTimeout(flush, 4000); });
+}
+
+/* ---------- מסכים ---------- */
+function header(extra) {
+  var h = '<div class="top"><div class="lv">';
+  for (var l = 1; l <= 4; l++) h += '<span class="chip ' + (l < S.level ? 'done' : l === S.level ? 'now' : '') + '">' + (l === 4 ? '★' : l) + '</span>';
+  h += '<span class="who">' + esc(S.name) + (S.cls ? ' · ' + esc(S.cls) : '') + '</span></div>' + (extra || '') + '</div>';
+  if (!LIVE) h = '<div class="demo">מצב ניסיון למורה – שום דבר לא נשלח. קפיצה לרמה: ' + [1, 2, 3, 4].map(function (l) { return '<button data-j="' + l + '">' + (l === 4 ? '★' : l) + '</button>'; }).join('') + '</div>' + h;
+  return h;
+}
+function startScreen() {
+  var prev = loadLocal();
+  var h = '<div class="card" style="margin-top:18px"><h1>' + CONF.title + '</h1><p class="muted">' + CONF.sub + '</p>';
+  h += '<p>3 רמות ועוד רמת אלופים. בכל רמה 10 שאלות – כדי לעבור צריך <b>8 נכונות</b>. לא עברתם? מקבלים שאלות חדשות באותה רמה ומנסים שוב.</p>';
+  if (prev && prev.name && prev.school) h += '<button class="btn gr" id="cont">להמשיך בתור ' + esc(prev.name) + ' (' + esc(prev.cls) + ')</button><p class="muted" style="text-align:center;margin:10px 0 0">או מלאו פרטים אחרים:</p>';
+  var cls = ['ז', 'ח', 'ט'].map(function (g) { return [1, 2, 3, 4, 5, 6, 7, 8].map(function (k) { return '<option>' + g + k + '</option>'; }).join(''); }).join('');
+  h += '<label for="nm" class="muted">שם פרטי ושם משפחה</label><input id="nm" class="name" autocomplete="off" maxlength="40">';
+  h += '<div class="two"><div><label for="sc" class="muted">בית ספר</label><select id="sc" class="name"><option value="">בחרו…</option><option>בגין</option><option>יד גיורא</option></select></div>';
+  h += '<div><label for="cl" class="muted">כיתה</label><select id="cl" class="name"><option value="">בחרו…</option>' + cls + '</select></div></div>';
+  h += '<div id="ne" class="err"></div><button class="btn" id="go">מתחילים</button></div>';
+  APP.innerHTML = h;
+  if (prev && prev.name && prev.school) document.getElementById('cont').onclick = function () { S = prev; route(); };
+  document.getElementById('go').onclick = function () {
+    var n = normName(document.getElementById('nm').value);
+    var sc = document.getElementById('sc').value, cl = document.getElementById('cl').value, ne = document.getElementById('ne');
+    if (n.split(' ').length < 2) { ne.textContent = 'כתבו שם פרטי ושם משפחה, כדי שהמורה ידע מי אתם.'; return; }
+    if (!sc || !cl) { ne.textContent = 'בחרו בית ספר וכיתה.'; return; }
+    begin(n, sc, cl);
+  };
+}
+function begin(n, sc, cl) {
+  APP.innerHTML = '<div class="card" style="margin-top:18px"><p>טוען…</p></div>';
+  var done = false;
+  function go(st) { if (done) return; done = true; S = st && st.name ? st : blank(n); S.name = n; S.school = sc; S.cls = cl; save(); route(); }
+  if (LIVE) {
+    api('load', [n, CONF.app, sc, cl], function (r) { go(r ? JSON.parse(r) : null); }, function () { go(null); });
+    setTimeout(function () { go(null); }, 8000);
+  } else go(null);
+}
+function route() {
+  if (S.level <= 3) levelIntro(); else lvl4Intro();
+}
+function levelIntro() {
+  var a = S.att[S.level];
+  var h = header() + '<div class="card"><h2>' + LNAME[S.level] + '</h2><p>' + LDESC[S.level] + '</p><p class="muted">' + (a ? 'זה יהיה הניסיון ה־' + (a + 1) + ' ברמה הזו – עם שאלות חדשות.' : '10 שאלות · צריך 8 נכונות כדי לעבור.') + '</p><button class="btn" id="go">' + (a ? 'מנסים שוב' : 'מתחילים') + '</button></div>';
+  APP.innerHTML = h;
+  document.getElementById('go').onclick = function () { S.att[S.level]++; save(); Q = { list: GEN.level(S.level), i: 0, ok: 0, wrong: [] }; showQ(); };
+}
+function optsHtml(q) {
+  var cls = q.optKind === 'svg' ? 'opts svg' : q.optKind === 'tbl' ? 'opts tbl' : 'opts';
+  return '<div class="' + cls + '">' + q.options.map(function (o, i) { return '<button class="opt" data-i="' + i + '"><span class="let">' + LET[i] + '</span><span>' + o + '</span></button>'; }).join('') + '</div>';
+}
+function showQ() {
+  var q = Q.list[Q.i];
+  var bar = '<div class="bar"><i style="width:' + (Q.i / NQ * 100) + '%"></i></div><div class="meta"><span>' + LNAME[S.level] + ' · שאלה ' + (Q.i + 1) + ' מתוך ' + NQ + '</span><span>✓ ' + Q.ok + '</span></div>';
+  APP.innerHTML = header(bar) + '<div class="card"><p class="q">' + q.prompt + '</p>' + (q.fig ? '<div class="fig">' + q.fig + '</div>' : '') + optsHtml(q) + '<div id="fb"></div></div>';
+  window.scrollTo(0, 0);
+  APP.querySelectorAll('.opt').forEach(function (b) { b.onclick = function () { answer(+b.dataset.i); }; });
+}
+function answer(i) {
+  var q = Q.list[Q.i], ok = i === q.answer;
+  var btns = APP.querySelectorAll('.opt');
+  btns.forEach(function (b) { b.disabled = true; });
+  btns[q.answer].classList.add('ok'); if (!ok) btns[i].classList.add('no');
+  if (ok) Q.ok++; else Q.wrong.push(q.type);
+  send({ kind: 'answer', level: S.level, attempt: S.att[S.level], type: q.type, correct: ok ? 1 : 0 });
+  var last = Q.i === NQ - 1;
+  document.getElementById('fb').innerHTML = '<div class="fb ' + (ok ? 'ok' : 'no') + '"><b class="t">' + (ok ? 'נכון!' : 'לא בדיוק. התשובה הנכונה: ' + LET[q.answer]) + '</b>' + q.expl + '</div><button class="btn" id="nx">' + (last ? 'לסיכום הרמה' : 'לשאלה הבאה') + '</button>';
+  document.getElementById('nx').onclick = function () { if (last) endLevel(); else { Q.i++; showQ(); } };
+  document.getElementById('fb').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+function endLevel() {
+  var passed = Q.ok >= PASS, L = S.level;
+  S.last = 'רמה ' + L + ': ' + Q.ok + '/10';
+  send({ kind: 'attempt', level: L, attempt: S.att[L], score: Q.ok, passed: passed ? 1 : 0 });
+  if (passed) S.level++;
+  save(); send({ kind: 'state' });
+  var tally = {}; Q.wrong.forEach(function (t) { tally[t] = (tally[t] || 0) + 1; });
+  var wl = Object.keys(tally).map(function (t) { return '<li>' + esc(t) + (tally[t] > 1 ? ' (' + tally[t] + ')' : '') + '</li>'; }).join('');
+  var h = header() + '<div class="card" style="text-align:center"><p class="muted">' + LNAME[L] + '</p><div class="big">' + Q.ok + '/10</div>';
+  if (passed) h += '<h2>' + (L === 3 ? 'עברתם את כל שלוש הרמות!' : 'כל הכבוד – עברתם לרמה ' + (L + 1) + '!') + '</h2>';
+  else h += '<h2>עוד קצת – צריך 8 נכונות</h2><p>נתרגל שוב את אותה רמה עם שאלות חדשות.</p>';
+  if (wl) h += '<div style="text-align:start"><p class="muted" style="margin-bottom:0">כדאי לחזור על:</p><ul class="ul">' + wl + '</ul></div>';
+  h += '<button class="btn ' + (passed ? 'gr' : '') + '" id="go">' + (passed ? (L === 3 ? 'לרמת האלופים ★' : 'לרמה ' + (L + 1)) : 'לנסות שוב') + '</button></div>';
+  APP.innerHTML = h; window.scrollTo(0, 0);
+  document.getElementById('go').onclick = route;
+}
+
+/* ---------- רמה 4 ---------- */
+function lvl4Intro() {
+  var t, d;
+  if (S.stage === 'A') { t = 'שלב א – אתגר בתשובה פתוחה'; d = 'כאן אין אפשרויות לבחירה: כותבים את התשובה בעצמכם. ענו נכון על <b>' + STREAK_GOAL + ' שאלות ברצף</b> כדי לפתוח את שלב החוקר. טעות מאפסת את הרצף.'; }
+  else if (S.stage === 'B') { t = 'שלב ב – החוקר'; d = CONF.expIntro; }
+  else { t = 'שלב ג – אתגר אינסופי'; d = 'שאלות פתוחות בלי סוף. כמה תשובות נכונות ברצף תצליחו? השיא שלכם: <b>' + S.best + '</b>.'; }
+  APP.innerHTML = header() + '<div class="card"><h2>' + LNAME[4] + '</h2><h2 style="font-size:19px">' + t + '</h2><p>' + d + '</p><button class="btn gr" id="go">קדימה</button></div>';
+  document.getElementById('go').onclick = function () { if (S.stage === 'B') { Q = { list: GEN.explorer(), i: 0 }; showExp(); } else openQ(); };
+}
+function openQ() {
+  var q = GEN.open(); Q = { q: q };
+  var top = S.stage === 'A'
+    ? '<div class="meta"><span>שלב א · רצף ' + S.streak + ' מתוך ' + STREAK_GOAL + '</span><span>★</span></div><div class="streak">' + Array.from({ length: STREAK_GOAL }, function (_, k) { return '<span class="' + (k < S.streak ? 'on' : '') + '"></span>'; }).join('') + '</div>'
+    : '<div class="stat"><div>רצף נוכחי<b>' + S.streak + '</b></div><div>השיא שלי<b>' + S.best + '</b></div></div>';
+  APP.innerHTML = header(top) + '<div class="card"><p class="q">' + q.prompt + '</p>' + (q.fig ? '<div class="fig">' + q.fig + '</div>' : '') + '<label class="muted" for="an">התשובה שלי:</label><input id="an" class="ans" inputmode="decimal" autocomplete="off" enterkeyhint="done"><div id="ae" class="err"></div><button class="btn" id="ck">בדיקה</button><div id="fb"></div></div>';
+  window.scrollTo(0, 0);
+  var inp = document.getElementById('an'), ck = document.getElementById('ck');
+  function check() {
+    var v = GEN.parseAnswer(inp.value);
+    if (isNaN(v)) { document.getElementById('ae').textContent = 'כתבו מספר (אפשר עם מינוס או נקודה עשרונית).'; inp.classList.add('shake'); setTimeout(function () { inp.classList.remove('shake'); }, 400); return; }
+    var ok = GEN.near(v, q.value);
+    inp.disabled = true; ck.style.display = 'none'; document.getElementById('ae').textContent = '';
+    if (ok) { S.streak++; if (S.stage === 'C' && S.streak > S.best) S.best = S.streak; } else S.streak = 0;
+    if (S.stage === 'A' && S.streak > S.best) S.best = S.streak;
+    S.open++;
+    send({ kind: 'answer', level: 4, attempt: S.stage === 'A' ? 'שלב א' : 'שלב ג', type: q.type, correct: ok ? 1 : 0 });
+    var unlock = S.stage === 'A' && S.streak >= STREAK_GOAL;
+    if (unlock) { S.stage = 'B'; S.streak = 0; }
+    save(); send({ kind: 'state' });
+    document.getElementById('fb').innerHTML = '<div class="fb ' + (ok ? 'ok' : 'no') + '"><b class="t">' + (ok ? 'נכון!' : 'לא בדיוק. התשובה: <span class="m" dir="ltr">' + GEN.fmt(q.value) + '</span>') + '</b>' + q.expl + '</div><button class="btn ' + (unlock ? 'gr' : '') + '" id="nx">' + (unlock ? 'פתחתם את שלב החוקר!' : 'לשאלה הבאה') + '</button>';
+    document.getElementById('nx').onclick = function () { if (unlock) lvl4Intro(); else openQ(); };
+  }
+  ck.onclick = check;
+  inp.onkeydown = function (e) { if (e.key === 'Enter') check(); };
+}
+function showExp() {
+  var q = Q.list[Q.i];
+  var bar = '<div class="bar"><i style="width:' + (Q.i / Q.list.length * 100) + '%"></i></div><div class="meta"><span>שלב החוקר · ' + (Q.i + 1) + ' מתוך ' + Q.list.length + '</span><span></span></div>';
+  APP.innerHTML = header(bar) + '<div class="card"><p class="q">' + q.prompt + '</p>' + (q.fig ? '<div class="fig">' + q.fig + '</div>' : '') + optsHtml(q) + '<div id="fb"></div></div>';
+  window.scrollTo(0, 0);
+  var first = true;
+  APP.querySelectorAll('.opt').forEach(function (b) {
+    b.onclick = function () {
+      var i = +b.dataset.i, ok = i === q.answer;
+      if (first) send({ kind: 'answer', level: 4, attempt: 'חוקר', type: 'חוקר ' + (Q.i + 1), correct: ok ? 1 : 0 });
+      first = false;
+      if (!ok) { b.classList.add('no'); b.disabled = true; document.getElementById('fb').innerHTML = '<div class="hint"><b>רמז:</b> ' + q.hint + '</div>'; return; }
+      APP.querySelectorAll('.opt').forEach(function (x) { x.disabled = true; }); b.classList.add('ok');
+      var last = Q.i === Q.list.length - 1;
+      document.getElementById('fb').innerHTML = '<div class="fb ok"><b class="t">נכון!</b>' + q.expl + '</div><button class="btn ' + (last ? 'gr' : '') + '" id="nx">' + (last ? 'סיימתי את החוקר' : 'הלאה') + '</button>';
+      document.getElementById('nx').onclick = function () {
+        if (!last) { Q.i++; showExp(); return; }
+        S.stage = 'C'; S.streak = 0; save(); send({ kind: 'state' });
+        APP.innerHTML = header() + '<div class="card"><h2>גיליתם!</h2><p>' + CONF.expDone + '</p><button class="btn gr" id="go">לאתגר האינסופי</button></div>';
+        document.getElementById('go').onclick = lvl4Intro;
+      };
+    };
+  });
+}
+
+startScreen();
+}
+</script>
+</body>
+</html>
