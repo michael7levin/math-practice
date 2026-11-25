@@ -761,6 +761,8 @@ function header(extra) {
   return h;
 }
 function startScreen() {
+  var UP = new URLSearchParams(location.search), un = normName(UP.get('n') || ''), us = UP.get('sc') || '', uc = UP.get('cl') || '';
+  if (un.split(' ').length >= 2 && us && uc) { try { history.replaceState(null, '', location.pathname); } catch (e) {} begin(un.slice(0, 40), us.slice(0, 20), uc.slice(0, 30)); return; }
   var prev = loadLocal();
   var h = '<div class="card" style="margin-top:18px"><h1>' + CONF.title + '</h1><p class="muted">' + CONF.sub + '</p>';
   h += '<p>3 רמות ועוד רמת אלופים. בכל רמה 10 שאלות – כדי לעבור צריך <b>8 נכונות</b>. לא עברתם? מקבלים שאלות חדשות באותה רמה ומנסים שוב.</p>';

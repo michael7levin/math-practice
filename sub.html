@@ -1,9 +1,37 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>תרגול מתמטיקה – לפי הקבצה</title>
-<style>body{font-family:system-ui,Arial,sans-serif;background:#f4f6fb;margin:0;padding:24px;color:#1d2433}
-.w{max-width:440px;margin:30px auto;text-align:center}h1{font-size:26px}
-a{display:block;margin:16px 0;padding:22px;border-radius:16px;background:#3157d5;color:#fff;font-size:22px;text-decoration:none;font-weight:700}
-a.p{background:#1f9d6b}</style></head>
-<body><div class="w"><h1>תרגול מתמטיקה</h1><p>בחרו נושא. במסך הבא תמלאו שם, כיתה והקבצה.</p>
-<a href="func.html?hq=1">מסע הפונקציות</a><a class="p" href="pct.html?hq=1">מסע האחוזים</a></div></body></html>
+<style>body{font-family:system-ui,Arial,sans-serif;background:#f4f6fb;margin:0;padding:20px;color:#1d2433}
+.w{max-width:440px;margin:20px auto}h1{font-size:26px;text-align:center}
+label{display:block;margin:12px 0 4px;color:#5b6475;font-size:15px}
+input,select{width:100%;box-sizing:border-box;min-height:52px;border:2px solid #c9cfda;border-radius:12px;padding:10px 14px;font-size:18px;background:#fff}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button,a.b{display:block;width:100%;box-sizing:border-box;margin:16px 0 0;padding:18px;border:0;border-radius:14px;background:#1d2433;color:#fff;font-size:20px;font-weight:700;text-align:center;text-decoration:none;cursor:pointer}
+a.f{background:#3157d5}a.p{background:#1f9d6b}
+.err{color:#e4572e;margin-top:8px;min-height:1em}.muted{color:#5b6475;text-align:center}</style></head>
+<body><div class="w"><h1>תרגול מתמטיקה</h1>
+<div id="s1">
+<label for="nm">שם פרטי ושם משפחה</label><input id="nm" maxlength="40" autocomplete="off">
+<div class="two"><div><label for="sc">בית ספר</label><select id="sc"><option value="">בחרו…</option><option>בגין</option><option selected>יד גיורא</option></select></div>
+<div><label for="cl">כיתה</label><select id="cl"><option value="">בחרו…</option></select></div></div>
+<label for="hq">הקבצה</label><select id="hq"><option value="">בחרו…</option><option>א</option><option>ב</option><option>ג</option></select>
+<div id="ne" class="err"></div><button id="go">המשך</button></div>
+<div id="s2" hidden><p class="muted" id="hi"></p><p class="muted">בחרו נושא:</p>
+<a class="b f" id="lf">מסע הפונקציות</a><a class="b p" id="lp">מסע האחוזים</a>
+<button id="bk" style="background:#fff;color:#1d2433;border:2px solid #1d2433">חזרה לפרטים</button></div>
+</div>
+<script>
+var cl = document.getElementById('cl');
+['ז','ח','ט'].forEach(function(g){for(var k=1;k<=8;k++){var o=document.createElement('option');o.textContent=g+k;cl.appendChild(o);}});
+document.getElementById('go').onclick = function () {
+  var n = document.getElementById('nm').value.replace(/\s+/g,' ').trim(), sc = document.getElementById('sc').value, c = cl.value, g = document.getElementById('hq').value, ne = document.getElementById('ne');
+  if (n.split(' ').length < 2) { ne.textContent = 'כתבו שם פרטי ושם משפחה, כדי שהמורה ידע מי אתם.'; return; }
+  if (!sc || !c) { ne.textContent = 'בחרו בית ספר וכיתה.'; return; }
+  if (!g) { ne.textContent = 'בחרו הקבצה.'; return; }
+  var q = '?n=' + encodeURIComponent(n) + '&sc=' + encodeURIComponent(sc) + '&cl=' + encodeURIComponent(c + ' · הקבצה ' + g);
+  document.getElementById('lf').href = 'func.html' + q; document.getElementById('lp').href = 'pct.html' + q;
+  document.getElementById('hi').textContent = 'שלום ' + n + ' (' + c + ', הקבצה ' + g + ')';
+  document.getElementById('s1').hidden = true; document.getElementById('s2').hidden = false;
+};
+document.getElementById('bk').onclick = function () { document.getElementById('s1').hidden = false; document.getElementById('s2').hidden = true; };
+</script></body></html>
