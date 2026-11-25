@@ -174,16 +174,16 @@ var GEN = (function () {
   /* ================= רמה 1 ================= */
   var T = {};
   T.readGraph = function () {
-    var a = pick([1, 2, -1, -2, 3]), x = pick([1, 2, 3, -1, -2].filter(function (v) { return Math.abs(a * v) <= 6; })), y = a * x;
+    var a = pick([1, 2, 2, -1, -2]), x = pick([1, 2, 3].filter(function (v) { return Math.abs(a * v) <= 6; })), y = a * x;
     var r = numOpts(y, [x, -y, y + a, y - a, a]);
     return { type: 'קריאת ערך מגרף', prompt: 'לפניכם גרף של פונקציה. מהו ערך ה־y כאשר ' + M('x = ' + fmt(x)) + '?', fig: graph({ lines: [{ a: a }] }),
       options: r.options, answer: r.answer, expl: 'מעל (או מתחת) ' + M('x = ' + fmt(x)) + ' נמצאת על הגרף הנקודה ' + M(pt(x, y)) + '. לכן ' + M('y = ' + fmt(y)) + '.',
       check: function (i) { return r.options[i] === M(fmt(y)); } };
   };
   T.readTable = function () {
-    var a = pick([2, 3, 4, 5, -2, -3]), xs = [0, 1, 2, 3, 4, 5], ys = xs.map(function (x) { return a * x; }), idx = ri(1, 5);
+    var a = pick([2, 3, 4, 5, 10]), xs = [0, 1, 2, 3, 4, 5], ys = xs.map(function (x) { return a * x; }), idx = ri(1, 5);
     var x0 = xs[idx], y0 = ys[idx];
-    if (Math.random() < 0.5) {
+    if (Math.random() < 0.75) {
       var r = numOpts(y0, [ys[idx === 5 ? 4 : idx + 1], x0, -y0, ys[idx - 1]]);
       return { type: 'קריאה מטבלת ערכים', prompt: 'לפניכם טבלת ערכים של פונקציה. מהו ערך ה־y כאשר ' + M('x = ' + fmt(x0)) + '?', fig: table(xs, ys),
         options: r.options, answer: r.answer, expl: 'בטבלה, מתחת ל־' + M('x = ' + fmt(x0)) + ' רשום ' + M('y = ' + fmt(y0)) + '.',
@@ -195,7 +195,7 @@ var GEN = (function () {
       check: function (i) { var v = parseNum(r2o.options[i]); var k = xs.indexOf(v); return k >= 0 && near(ys[k], y0); } };
   };
   T.subst = function () {
-    var a = pick([2, 3, 4, 5, -2, -3]), x = pick([1, 2, 3, 4, 5, -1, -2]), f = a * x;
+    var a = pick([2, 3, 4, 5, 10]), x = pick([1, 2, 3, 4, 5]), f = a * x;
     var r = numOpts(f, [a + x, -f, x - a, f + a]);
     return { type: 'הצבה בייצוג אלגברי', prompt: 'נתונה הפונקציה ' + M(rule(a)) + '. מהו ערך הפונקציה עבור ' + M('x = ' + fmt(x)) + '?', fig: '',
       options: r.options, answer: r.answer, expl: 'מציבים ' + M('x = ' + fmt(x)) + ': ' + M('y = ' + fmt(a) + ' · ' + paren(x) + ' = ' + fmt(f)) + '.',
@@ -218,8 +218,8 @@ var GEN = (function () {
     return t + '</svg>';
   }
   T.quadrant = function () {
-    var v = ri(0, 3), X = ri(1, 7), Y = ri(1, 7);
-    if (X === Y) Y = X === 7 ? 6 : X + 1;
+    var v = pick([0, 0, 1, 2]), X = ri(1, 5), Y = ri(1, 5);
+    if (X === Y) Y = X === 5 ? 4 : X + 1;
     if (v === 0) {
       var sx = pick([1, -1]), sy = pick([1, -1]), x = sx * X, y = sy * Y, q = quadOf(x, y);
       var opts = QN.map(function (n) { return 'ברביע ' + n; });
@@ -251,8 +251,8 @@ var GEN = (function () {
       check: function (i) { return r4.options[i] === C; } };
   };
   T.readPoint = function () {
-    var X = ri(1, 5), Y = ri(1, 5); if (X === Y) Y = X === 5 ? 3 : X + 1;
-    var x = pick([1, -1]) * X, y = pick([1, -1]) * Y;
+    var X = ri(1, 4), Y = ri(1, 4); if (X === Y) Y = X === 4 ? 2 : X + 1;
+    var q1 = Math.random() < 0.5, x = (q1 ? 1 : pick([1, -1])) * X, y = (q1 ? 1 : pick([1, -1])) * Y;
     var r = finalize(M(pt(x, y)), [M(pt(y, x)), M(pt(-x, y)), M(pt(x, -y)), M(pt(-y, -x))]);
     return { type: 'שיעורי נקודה במערכת הצירים', prompt: 'מהם שיעורי הנקודה המסומנת?', fig: graph({ pts: [[x, y]] }), options: r.options, answer: r.answer,
       expl: 'הולכים מהנקודה ישר למטה או למעלה אל ציר ה־x: ' + M('x = ' + fmt(x)) + '. ואז אופקית אל ציר ה־y: ' + M('y = ' + fmt(y)) + '. כותבים קודם את x: ' + M(pt(x, y)) + '.',
@@ -275,8 +275,13 @@ var GEN = (function () {
     return { type: 'הגדרות: ' + stripM(d[0]).replace(/[?]/, '').replace(/^(מהו |מהי |מה פירוש )/, '').replace(/^פונקציה (\S+).*/, '$1'), prompt: d[0], fig: '', options: r.options, answer: r.answer, expl: d[3],
       check: function (i) { return r.options[i] === d[1]; } };
   };
+  T.defEasy = function () {
+    var d = pick(DEFS.slice(0, 5)), r = finalize(d[1], shuffle(d[2]));
+    return { type: 'הגדרות: ' + stripM(d[0]).replace(/[?]/, '').replace(/^(מהו |מהי |מה פירוש )/, '').replace(/^פונקציה (\S+).*/, '$1'), prompt: d[0], fig: '', options: r.options, answer: r.answer, expl: d[3],
+      check: function (i) { return r.options[i] === d[1]; } };
+  };
   T.pointOn = function () {
-    var a = pick([2, 3, -2, -3, 4]), p = pick([1, 2, 3, -1, -2]), q = a * p;
+    var a = pick([2, 3, 4, 5]), p = pick([1, 2, 3]), q = a * p;
     var cand = [[p, q + 1], [q, p], [p, -q], [p, p + a], [-p, q], [p + 1, q]];
     var wrong = cand.filter(function (c) { return !near(c[1], a * c[0]); }).map(function (c) { return M(pt(c[0], c[1])); });
     var r = finalize(M(pt(p, q)), shuffle(wrong));
@@ -285,7 +290,7 @@ var GEN = (function () {
       check: function (i) { var m = r.options[i].match(/\(([^,]+), ([^)]+)\)/); var X = parseNum(m[1]), Y = parseNum(m[2]); return near(Y, a * X); } };
   };
   T.incDec = function () {
-    var a = pick([2, 3, -2, -3, 0.5, -0.5, 1, -1, 4, -4]), byGraph = Math.random() < 0.5;
+    var a = pick([2, 3, -2, -3, 1, -1]), byGraph = Math.random() < 0.7;
     var labels = ['עולה', 'יורדת', 'קבועה', 'עולה ואחר כך יורדת'];
     var correct = a > 0 ? 'עולה' : 'יורדת';
     var r = finalize(correct, labels.filter(function (l) { return l !== correct; }));
@@ -312,7 +317,7 @@ var GEN = (function () {
   ];
   T.isFunc = function () {
     var askNot = Math.random() < 0.6;
-    var one = askNot ? pick(NONF) : pick(FUNCS), rest = shuffle(askNot ? FUNCS : NONF).slice(0, 3);
+    var one = askNot ? pick(NONF.slice(0, 2)) : pick(FUNCS), rest = shuffle(askNot ? FUNCS : NONF).slice(0, 3);
     function g(spec) { var o = spec(); o.small = true; o.R = 6; return graph(o); }
     var correct = g(one), wrong = rest.map(g);
     var r = finalize(correct, wrong);
@@ -599,7 +604,7 @@ var GEN = (function () {
   }
 
   var PLAN = {
-    1: ['quadrant', 'quadrant', 'readPoint', 'readGraph', 'readTable', 'subst', 'pointOn', 'incDec', 'isFunc', 'defBasic'],
+    1: ['quadrant', 'quadrant', 'readPoint', 'readGraph', 'readTable', 'subst', 'pointOn', 'incDec', 'isFunc', 'defEasy'],
     2: ['tableToRule', 'graphToRule', 'ruleToGraph', 'slopeFromPoint', 'rate', 'steep', 'intervals', 'quadLine', 'posNeg', 'domRange'],
     3: ['wordPrice', 'wordSpeed', 'compare2', 'whatIf', 'findX', 'twoStep', 'direct', 'defBasic', 'truth', 'truth']
   };
