@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>מסע הפונקציות – ח׳2 יד גיורא</title>
+<style>body{font-family:system-ui,Arial,sans-serif;background:#f4f6fb;margin:0;padding:20px;color:#1d2433}
+.w{max-width:440px;margin:24px auto}h1{font-size:28px;text-align:center;margin-bottom:4px}
+.muted{color:#5b6475;text-align:center;margin-top:0}
+label{display:block;margin:16px 0 4px;color:#5b6475;font-size:15px}
+input{width:100%;box-sizing:border-box;min-height:52px;border:2px solid #c9cfda;border-radius:12px;padding:10px 14px;font-size:18px;background:#fff}
+button{display:block;width:100%;margin:16px 0 0;padding:18px;border:0;border-radius:14px;background:#1f8a70;color:#fff;font-size:20px;font-weight:700;cursor:pointer}
+.err{color:#e4572e;margin-top:8px;min-height:1em}</style></head>
+<body><div class="w"><h1>מסע הפונקציות</h1><p class="muted">ח׳2 · יד גיורא · מבוא לפונקציות והפונקציה הקווית</p>
+<label for="nm">שם פרטי ושם משפחה</label><input id="nm" maxlength="40" autocomplete="off" enterkeyhint="go">
+<div id="ne" class="err"></div><button id="go">מתחילים</button></div>
+<script>
+function go() {
+  var n = document.getElementById('nm').value.replace(/\s+/g, ' ').trim();
+  if (n.split(' ').length < 2) { document.getElementById('ne').textContent = 'כתבו שם פרטי ושם משפחה, כדי שהמורה ידע מי אתם.'; return; }
+  location.href = 'func.html?n=' + encodeURIComponent(n) + '&sc=' + encodeURIComponent('יד גיורא') + '&cl=' + encodeURIComponent('ח2');
+}
+document.getElementById('go').onclick = go;
+document.getElementById('nm').onkeydown = function (e) { if (e.key === 'Enter') go(); };
+</script></body></html>
